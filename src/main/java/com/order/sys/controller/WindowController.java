@@ -2,6 +2,7 @@ package com.order.sys.controller;
 
 
 import com.order.sys.bean.dto.BaseMessage;
+import com.order.sys.bean.dto.MessageValidateWindow;
 import com.order.sys.bean.dto.MessageWindow;
 import com.order.sys.bean.dto.ObjCreateWindow;
 import com.order.sys.bean.model.ComWindows;
@@ -19,7 +20,7 @@ public class WindowController {
     private WindowServices windowServices;
 
     @PostMapping("/getValidate")
-    public BaseMessage<List<ComWindows>> getValidateWindow(@RequestParam("token") Integer token)
+    public BaseMessage<List<MessageValidateWindow>> getValidateWindow(@RequestParam("token") Integer token)
     {
         return windowServices.getValidateWindow(token);
     }

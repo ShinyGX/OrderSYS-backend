@@ -1,14 +1,12 @@
 package com.order.sys.services.impl;
 
 
-import com.order.sys.bean.dto.BaseMessage;
-import com.order.sys.bean.dto.MessageWindow;
-import com.order.sys.bean.dto.ObjCreateWindow;
-import com.order.sys.bean.dto.ObjResetWindow;
+import com.order.sys.bean.dto.*;
 import com.order.sys.bean.model.ComAccount;
 import com.order.sys.bean.model.ComStaff;
 import com.order.sys.bean.model.ComWindowUseful;
 import com.order.sys.bean.model.ComWindows;
+import com.order.sys.bean.model.pk.WindowAccountId;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
 import com.order.sys.repository.*;
@@ -19,6 +17,7 @@ import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -82,17 +81,35 @@ public class WindowServicesImpl implements WindowServices {
     }
 
     @Override
-    public BaseMessage<List<ComWindows>> getValidateWindow(Integer token) {
-        ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
-        if(comAccount == null)
-            return MessageInputUtil.baseMessageErrorInput("Account Not Found",ErrorCode.OBJECT_NOT_FOUND);
-        ComStaff comStaff = FindObjUtil.findById(comAccount.getStaff_id(),comStaffRepository);
-        if(comStaff == null)
-            return MessageInputUtil.baseMessageErrorInput("Staff Not Found",ErrorCode.OBJECT_NOT_FOUND);
+    public BaseMessage<List<MessageValidateWindow>> getValidateWindow(Integer token) {
+        ComAccount comAccount = FindObjUtil.findById(token, comAccountRepository);
+        if (comAccount == null)
+            return MessageInputUtil.baseMessageErrorInput("Account Not Found", ErrorCode.OBJECT_NOT_FOUND);
+        ComStaff comStaff = FindObjUtil.findById(comAccount.getStaff_id(), comStaffRepository);
+        if (comStaff == null)
+            return MessageInputUtil.baseMessageErrorInput("Staff Not Found", ErrorCode.OBJECT_NOT_FOUND);
 
+        List<ComWindows> comWindowsList = comWindowsRepository.getValidateWindow(comStaff.getStaff_office_id(), token);
+        List<MessageValidateWindow> messageValidateWindowList = new ArrayList<>();
+        if (comWindowsList.isEmpty()) {
+            messageValidateWindowList.add(new MessageValidateWindow(null, false));
+        }
+        else if (comWindowsList.size() == 1) {
+            for (ComWindows comWindows : comWindowsList) {
+                WindowAccountId windowAccountId = new WindowAccountId(comWindows.getWindow_id(), token);
+                ComWindowUseful comWindowUseful = FindObjUtil.findById(windowAccountId, comWindowUsefulRepository);
+                if (comWindowUseful == null)
+                    messageValidateWindowList.add(new MessageValidateWindow(comWindows, false));
+                else
+                    messageValidateWindowList.add(new MessageValidateWindow(comWindows, true));
+            }
+        } else {
+            for (ComWindows comWindows : comWindowsList) {
+                messageValidateWindowList.add(new MessageValidateWindow(comWindows, false));
+            }
+        }
 
-        return MessageInputUtil.baseMessageListInput("Network error",
-                comWindowsRepository.getValidateWindow(comStaff.getStaff_office_id(),token));
+        return MessageInputUtil.baseMessageListInput("Network error", messageValidateWindowList);
     }
 
     @Override
