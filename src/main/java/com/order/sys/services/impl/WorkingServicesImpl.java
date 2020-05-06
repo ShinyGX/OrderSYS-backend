@@ -39,8 +39,7 @@ public class WorkingServicesImpl implements WorkingServices {
 
         ComWorking comWorking1 = new ComWorking(accountId,windowsId,new Date(),1);
         comWorking1 = comWorkingRepository.save(comWorking1);
-        WindowAccountId pk = new WindowAccountId(windowsId,accountId);
-        ComWindowUseful comWindowUseful = FindObjUtil.findById(pk,comWindowUsefulRepository);
+        ComWindowUseful comWindowUseful = comWindowUsefulRepository.getByWindowId(windowsId);
         if(comWindowUseful == null)
             return MessageInputUtil.baseMessageErrorInput("Window Not Exist",ErrorCode.OBJECT_NOT_FOUND);
         comWindowUseful.setIs_use(1);
@@ -62,8 +61,7 @@ public class WorkingServicesImpl implements WorkingServices {
         comWorking.setEnd_time(new Date());
         comWorking.setIs_working(0);
         comWorkingRepository.save(comWorking);
-        WindowAccountId pk = new WindowAccountId(comWorking.getWindow_id(),accountId);
-        ComWindowUseful comWindowUseful = FindObjUtil.findById(pk,comWindowUsefulRepository);
+        ComWindowUseful comWindowUseful = comWindowUsefulRepository.getByWindowId(comWorking.getWindow_id());
         if(comWindowUseful == null)
             return MessageInputUtil.baseMessageErrorInput("Window Not Exist",ErrorCode.OBJECT_NOT_FOUND);
         comWindowUseful.setIs_use(0);
