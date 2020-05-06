@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: prod
+    #active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.26.184.232:3306/book_sys?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT&useSSL=false
+    username: root
+    password: 12345
+
+  jpa:
+    hibernate:
+    ddl-auto: update
+    #database-platform: org.hibernate.dialect.MySQL5Dialect
+    naming:
+      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  show-sql: true
+

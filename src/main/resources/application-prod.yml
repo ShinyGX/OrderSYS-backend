@@ -1,0 +1,7 @@
+server:
+  port: 7777
+  servlet:
+    context-path: /sys
+
+ResourcePath: C:\Users\Administrator\Desktop\sys\treasure\
+getResourcePath: http://39.106.81.100:9999/sys/treasure/
