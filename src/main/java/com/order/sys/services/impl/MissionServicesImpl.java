@@ -6,6 +6,7 @@ import com.order.sys.bean.dto.MessageBook;
 import com.order.sys.bean.dto.MessageMission;
 import com.order.sys.bean.dto.MessageUser;
 import com.order.sys.bean.model.*;
+import com.order.sys.bean.model.pk.WindowAccountId;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
 import com.order.sys.repository.*;
@@ -28,6 +29,9 @@ public class MissionServicesImpl implements MissionServices {
 
     @Autowired
     private StaffRecodeServices staffRecodeServices;
+
+    @Autowired
+    private ComWindowUsefulRepository comWindowUsefulRepository;
 
     @Autowired
     private ComAccountRepository comAccountRepository;
@@ -65,6 +69,9 @@ public class MissionServicesImpl implements MissionServices {
         if(bookUser == null)
             return MessageInputUtil.baseMessageErrorInput("Unknown User",ErrorCode.UNKNOWN_ERROR);
 
+        ComWindowUseful comWindowUseful = comWindowUsefulRepository.getByToken(token);
+        comWindowUseful.setMission_id(messageMission.getMissionId());
+        comWindowUsefulRepository.save(comWindowUseful);
         messageMission.setCustomerInfo(new MessageUser(bookUser.getUser_id(),bookUser.getUser_name(),bookUser.getUser_icon()));
         return MessageInputUtil.baseMessageSimpleInputRecode("It Is Last",
                 messageMission,staffRecodeServices,StaffActionCode.START_MISSION,token,

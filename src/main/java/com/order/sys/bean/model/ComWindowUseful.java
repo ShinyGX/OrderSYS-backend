@@ -22,13 +22,31 @@ public class ComWindowUseful {
     @Column(name = "is_use")
     private Integer is_use;
 
+    @Column(name = "mission_id")
+    private Integer mission_id;
+
     public ComWindowUseful(Integer window_id, Integer account_id, Integer is_use) {
         this.window_id = window_id;
         this.account_id = account_id;
         this.is_use = is_use;
     }
 
+    public ComWindowUseful(Integer window_id, Integer account_id, Integer is_use, Integer mission_id) {
+        this.window_id = window_id;
+        this.account_id = account_id;
+        this.is_use = is_use;
+        this.mission_id = mission_id;
+    }
+
     public ComWindowUseful() {
+    }
+
+    public Integer getMission_id() {
+        return mission_id;
+    }
+
+    public void setMission_id(Integer mission_id) {
+        this.mission_id = mission_id;
     }
 
     public Integer getAccount_id() {

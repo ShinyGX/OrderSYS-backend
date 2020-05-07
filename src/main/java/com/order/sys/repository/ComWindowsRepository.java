@@ -4,6 +4,7 @@ package com.order.sys.repository;
 import com.order.sys.bean.dto.MessageWindow;
 import com.order.sys.bean.model.ComWindows;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -34,6 +35,9 @@ public interface ComWindowsRepository extends JpaRepository<ComWindows,Integer> 
             " where w.office_id=?1 and w.office_id=o.office_id and w.business_type_id=bt.business_type_id" +
             " and w.is_use=1")
     List<MessageWindow> getOfficeWindowMessage(Integer officeId);
+
+
+
 
 
 

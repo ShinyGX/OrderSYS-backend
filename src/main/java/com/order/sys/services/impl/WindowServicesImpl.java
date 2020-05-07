@@ -36,6 +36,8 @@ public class WindowServicesImpl implements WindowServices {
     private ComWindowUsefulRepository comWindowUsefulRepository;
     @Autowired
     private ComBusinessRepository comBusinessRepository;
+    @Autowired
+    private BookMissionRepository bookMissionRepository;
 
     @Override
     public BaseMessage<String> addWindow(ObjCreateWindow obj) {
@@ -101,7 +103,11 @@ public class WindowServicesImpl implements WindowServices {
                 if (comWindowUseful == null)
                     messageValidateWindowList.add(new MessageValidateWindow(comWindows, false));
                 else
-                    messageValidateWindowList.add(new MessageValidateWindow(comWindows, true));
+                {
+                    MessageMission messageMission = bookMissionRepository.getMissionMessageById(comWindowUseful.getMission_id());
+                    messageValidateWindowList.add(new MessageValidateWindow(comWindows, messageMission,true));
+                }
+
             }
         } else {
             for (ComWindows comWindows : comWindowsList) {

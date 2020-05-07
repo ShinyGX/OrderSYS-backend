@@ -30,6 +30,18 @@ public interface BookMissionRepository extends JpaRepository<BookMission,Integer
             " u.user_id=m.mission_user_id")
     MessageMission getNext(Integer officeId, Integer businessTypeId, Date start, Date end);
 
+    @Query(value = "select new com.order.sys.bean.dto.MessageMission(" +
+            "m.mission_id," +
+            "b.business_id," +
+            "b.business_desc," +
+            "bt.business_type_id," +
+            "bt.business_type_desc," +
+            "m.mission_user_id)" +
+            " from BookMission m,ComBusiness b,ComBusinessType bt,BookUser u " +
+            " where m.mission_business_id=b.business_id and b.business_type_id=bt.business_type_id and" +
+            " u.user_id=m.mission_user_id and m.mission_id=?1")
+    MessageMission getMissionMessageById(Integer missionId);
+
 //    private Integer businessId;
 //    private String businessName;
 //    private String businessDesc;
