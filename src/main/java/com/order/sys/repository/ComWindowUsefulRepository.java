@@ -20,8 +20,13 @@ public interface ComWindowUsefulRepository extends JpaRepository<ComWindowUseful
 
     @Transactional
     @Modifying
-    @Query(value = "update com_window_useful set is_use=0 where window_id=?1",nativeQuery = true)
+    @Query(value = "update com_window_useful set is_use=0,account_id=-1 where window_id=?1",nativeQuery = true)
     void releaseWindow(Integer windowId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update com_window_useful set is_use=1,account_id=?2 where window_id=?1",nativeQuery = true)
+    void lockWindow(Integer windowId,Integer token);
 
     @Transactional
     @Modifying

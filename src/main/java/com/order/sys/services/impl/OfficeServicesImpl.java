@@ -15,10 +15,7 @@ import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class OfficeServicesImpl implements OfficeServices {
@@ -133,6 +130,7 @@ public class OfficeServicesImpl implements OfficeServices {
             messageEverydayData.setTime(beginOfDate);
             messageEverydayData.setPerson(bookMissionList.size());
             List<MessageBusinessRequestInternal> messageBusinessRequestInternalList = new ArrayList<>();
+            HashMap<String,Integer> map = new HashMap<>();
             for(BookMission bm: bookMissionList)
             {
                 MessageBusinessRequestInternal businessRequestInternal = bookMissionRepository.getBusiness(bm.getMission_id());
@@ -142,8 +140,15 @@ public class OfficeServicesImpl implements OfficeServices {
                 }
                 businessRequestInternal.setDone(bm.getMission_is_done() == 2);
                 messageBusinessRequestInternalList.add(businessRequestInternal);
+                if(map.containsKey(businessRequestInternal.getBusinessTypeDesc()))
+                {
+                    map.put(businessRequestInternal.getBusinessTypeDesc(),map.get(businessRequestInternal.getBusinessTypeDesc()) + 1);
+                }
+                else
+                    map.put(businessRequestInternal.getBusinessTypeDesc(),1);
             }
 
+            messageEverydayData.setBusinessTypeValue(map);
             messageEverydayData.setBusinessList(messageBusinessRequestInternalList);
             messageEverydayDataList.add(messageEverydayData);
         }

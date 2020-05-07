@@ -4,6 +4,7 @@ import com.order.sys.bean.dto.internal.MessageBusinessRequestInternal;
 
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class MessageEverydayData {
@@ -11,6 +12,7 @@ public class MessageEverydayData {
     private Date time;
     private Integer person;
     private List<MessageBusinessRequestInternal> businessList;
+    private HashMap<String, Integer> businessTypeValue;
 
     public MessageEverydayData() {
     }
@@ -19,6 +21,14 @@ public class MessageEverydayData {
         this.time = time;
         this.person = person;
         this.businessList = businessList;
+    }
+
+    public HashMap<String, Integer> getBusinessTypeValue() {
+        return businessTypeValue;
+    }
+
+    public void setBusinessTypeValue(HashMap<String, Integer> businessTypeValue) {
+        this.businessTypeValue = businessTypeValue;
     }
 
     public Date getTime() {

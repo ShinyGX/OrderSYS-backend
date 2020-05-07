@@ -42,9 +42,7 @@ public class WorkingServicesImpl implements WorkingServices {
         ComWindowUseful comWindowUseful = comWindowUsefulRepository.getByWindowId(windowsId);
         if(comWindowUseful == null)
             return MessageInputUtil.baseMessageErrorInput("Window Not Exist",ErrorCode.OBJECT_NOT_FOUND);
-        comWindowUseful.setIs_use(1);
-        comWindowUseful.setAccount_id(accountId);
-        comWindowUsefulRepository.save(comWindowUseful);
+        comWindowUsefulRepository.lockWindow(windowsId,accountId);
         return MessageInputUtil.baseMessageSimpleInputRecode("Network Error",
                 comWorkingRepository.getData(comWorking1.getWorking_id()),
                 staffRecodeServices,StaffActionCode.START_WORK,
