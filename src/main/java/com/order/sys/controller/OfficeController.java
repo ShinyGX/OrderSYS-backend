@@ -1,10 +1,7 @@
 package com.order.sys.controller;
 
 
-import com.order.sys.bean.dto.BaseMessage;
-import com.order.sys.bean.dto.MessageEverydayData;
-import com.order.sys.bean.dto.MessageOffice;
-import com.order.sys.bean.dto.ObjCreateOffice;
+import com.order.sys.bean.dto.*;
 import com.order.sys.bean.model.SysArea;
 import com.order.sys.bean.model.SysCity;
 import com.order.sys.bean.model.SysOffice;
@@ -72,8 +69,8 @@ public class OfficeController {
     }
 
     @PostMapping("/report")
-    public BaseMessage<List<MessageEverydayData>> getReport(@RequestParam("token") Integer token,
-                                                            @RequestParam("officeId") Integer officeId)
+    public BaseMessage<MessageReport> getReport(@RequestParam("token") Integer token,
+                                                @RequestParam("officeId") Integer officeId)
     {
         return officeServices.getOfficeReport(token, officeId);
     }

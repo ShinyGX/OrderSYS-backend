@@ -104,7 +104,7 @@ public class OfficeServicesImpl implements OfficeServices {
     }
 
     @Override
-    public BaseMessage<List<MessageEverydayData>> getOfficeReport(Integer token, Integer officeId) {
+    public BaseMessage<MessageReport> getOfficeReport(Integer token, Integer officeId) {
 
         SysOffice sysOffice = FindObjUtil.findById(officeId,sysOfficeRepository);
         ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
@@ -153,7 +153,18 @@ public class OfficeServicesImpl implements OfficeServices {
             messageEverydayDataList.add(messageEverydayData);
         }
 
+        HashMap<String,Integer> value = new HashMap<>();
+        for(MessageEverydayData data : messageEverydayDataList) {
+            for (String key : data.getBusinessTypeValue().keySet()) {
+                if (value.containsKey(key))
+                    value.put(key, data.getBusinessTypeValue().get(key) + 1);
+                else
+                    value.put(key, 1);
+            }
+        }
 
-        return MessageInputUtil.baseMessageSuccessInput(messageEverydayDataList);
+        MessageReport messageReport = new MessageReport(messageEverydayDataList,value);
+
+        return MessageInputUtil.baseMessageSuccessInput(messageReport);
     }
 }
