@@ -24,5 +24,21 @@ public class UserController {
         return userServices.login(phone,pwd);
     }
 
+    @GetMapping("/loginByWeibo")
+    BaseMessage<MessageUser> loginByWeibo(@RequestParam("weibo") String id)
+    {
+        return userServices.loginByWeiBo(id);
+    }
+
+    @GetMapping("/reset")
+    BaseMessage<MessageUser> reset(
+            @RequestParam("id") Integer id,
+            @RequestParam(value = "phone",required = false) String phone,
+            @RequestParam(value = "pwd",required = false) String pwd,
+            @RequestParam(value = "icon",required = false) String icon,
+            @RequestParam(value = "name",required = false) String name)
+    {
+        return userServices.reset(id,name,phone,pwd,icon);
+    }
 
 }

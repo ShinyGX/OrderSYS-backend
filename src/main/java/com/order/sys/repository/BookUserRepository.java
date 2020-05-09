@@ -14,4 +14,9 @@ public interface BookUserRepository extends JpaRepository<BookUser,Integer> {
             " where u.user_phone=?1 and u.user_password=?2")
     MessageUser login(String phone, String pwd);
 
+    @Query(value = "select new com.order.sys.bean.dto.MessageUser(u.user_id,u.user_name,u.user_icon) " +
+            "from BookUser u " +
+            "where u.user_weibo_id=?1")
+    MessageUser loginByWeibo(String weiboId);
+
 }

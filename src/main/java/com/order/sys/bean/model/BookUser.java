@@ -22,12 +22,12 @@ public class BookUser {
     private String user_password;
 
     @Column(name = "user_weibo_id")
-    private Integer user_weibo_id;
+    private String user_weibo_id;
 
     @Column(name = "user_icon")
     private String user_icon;
 
-    public BookUser(Integer user_id, String user_name, String user_phone, String user_password, Integer user_weibo_id, String user_icon) {
+    public BookUser(Integer user_id, String user_name, String user_phone, String user_password, String user_weibo_id, String user_icon) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_phone = user_phone;
@@ -72,11 +72,11 @@ public class BookUser {
         this.user_password = user_password;
     }
 
-    public Integer getUser_weibo_id() {
+    public String getUser_weibo_id() {
         return user_weibo_id;
     }
 
-    public void setUser_weibo_id(Integer user_weibo_id) {
+    public void setUser_weibo_id(String user_weibo_id) {
         this.user_weibo_id = user_weibo_id;
     }
 
