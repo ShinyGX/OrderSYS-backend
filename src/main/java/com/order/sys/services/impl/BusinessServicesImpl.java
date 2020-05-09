@@ -233,5 +233,10 @@ public class BusinessServicesImpl implements BusinessServices {
         return MessageInputUtil.baseMessageErrorInput("???",ErrorCode.UNKNOWN_ERROR);
     }
 
+    @Override
+    public BaseMessage<ComBusiness> getBusiness(Integer id) {
+        return MessageInputUtil.baseMessageSimpleInput("Obj Not Found",FindObjUtil.findById(id,comBusinessRepository));
+    }
+
 
 }

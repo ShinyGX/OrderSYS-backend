@@ -20,5 +20,6 @@ public interface BusinessServices {
     BaseMessage<String> deleteBusiness(Integer token,Integer businessId);
     BaseMessage<List<ComBusinessType>>  getBusinessType();
     BaseMessage<List<ComBusinessType>> getType(Integer id,String name);
+    BaseMessage<ComBusiness> getBusiness(Integer id);
 
 }

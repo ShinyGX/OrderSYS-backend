@@ -76,4 +76,10 @@ public class BusinessController {
     {
         return businessServices.getType(id,name);
     }
+
+    @GetMapping("/business")
+    public BaseMessage<ComBusiness> business(@RequestParam("id") Integer id)
+    {
+        return businessServices.getBusiness(id);
+    }
 }
