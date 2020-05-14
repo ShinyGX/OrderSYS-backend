@@ -9,4 +9,5 @@ public class ErrorCode {
     public final static int PERMISSION_DENY = 19997;
     public final static int ACTION_ALREADY_DONE = 19996;
     public final static int OBJECT_ALREADY_EXIST = 19995;
+    public final static int A_LI_YUN_API_ERROR  = 19994;
 }

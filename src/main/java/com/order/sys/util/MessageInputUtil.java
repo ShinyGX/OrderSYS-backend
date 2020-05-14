@@ -21,6 +21,7 @@ public class MessageInputUtil {
         errorCodeMap.put(ErrorCode.ACTION_ALREADY_DONE, "Action Already Done");
         errorCodeMap.put(ErrorCode.OBJECT_ALREADY_EXIST, "Object Already Exist");
         errorCodeMap.put(ErrorCode.SUCCESS, "Success");
+        errorCodeMap.put(ErrorCode.A_LI_YUN_API_ERROR,"ALiYun Api Error");
     }
 
 
