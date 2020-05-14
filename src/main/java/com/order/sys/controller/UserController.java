@@ -41,4 +41,13 @@ public class UserController {
         return userServices.reset(id,name,phone,pwd,icon);
     }
 
+
+    @GetMapping("/register")
+    BaseMessage<MessageUser> register(
+            @RequestParam("phone") String phone,
+            @RequestParam("pwd") String pwd,
+            @RequestParam("name")String name)
+    {
+        return userServices.register(phone,pwd,name);
+    }
 }

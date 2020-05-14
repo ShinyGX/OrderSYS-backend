@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SmsController {
 
 
-
     @Autowired
     private SmsServices smsServices;
 
@@ -23,7 +22,5 @@ public class SmsController {
     {
         return smsServices.getCode(phone);
     }
-
-
 
 }

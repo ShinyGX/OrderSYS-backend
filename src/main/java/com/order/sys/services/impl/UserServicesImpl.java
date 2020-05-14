@@ -63,7 +63,7 @@ public class UserServicesImpl implements UserServices {
 
 
     @Override
-    public BaseMessage<MessageUser> register(String id, String pwd, String name) {
+    public BaseMessage<MessageUser> register(String phone, String pwd, String name) {
         return null;
     }
 }
