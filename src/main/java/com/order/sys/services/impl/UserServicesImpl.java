@@ -77,4 +77,13 @@ public class UserServicesImpl implements UserServices {
 
         return MessageInputUtil.baseMessageSuccessInput(new MessageUser(user.getUser_id(),user.getUser_name(),user.getUser_icon()));
     }
+
+    @Override
+    public BaseMessage<MessageUser> userInfo(Integer id) {
+        BookUser bookUser = FindObjUtil.findById(id,bookUserRepository);
+        if(bookUser == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.OBJECT_NOT_FOUND);
+
+        return MessageInputUtil.baseMessageSuccessInput(new MessageUser(bookUser.getUser_id(),bookUser.getUser_name(),bookUser.getUser_icon()));
+    }
 }

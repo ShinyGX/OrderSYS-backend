@@ -50,4 +50,10 @@ public class UserController {
     {
         return userServices.register(phone,pwd,name);
     }
+
+    @GetMapping("/userInfo")
+    BaseMessage<MessageUser> userInfo(@RequestParam("id") Integer id)
+    {
+        return userServices.userInfo(id);
+    }
 }

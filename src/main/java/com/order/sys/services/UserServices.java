@@ -10,4 +10,5 @@ public interface UserServices {
     BaseMessage<MessageUser> loginByWeiBo(String weiboId);
     BaseMessage<MessageUser> reset(Integer id,String name,String phone,String pwd,String icon);
     BaseMessage<MessageUser> register(String phone,String pwd,String name);
+    BaseMessage<MessageUser> userInfo(Integer id);
 }
