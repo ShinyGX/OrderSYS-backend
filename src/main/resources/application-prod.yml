@@ -3,5 +3,5 @@ server:
   servlet:
     context-path: /sys
 
-ResourcePath: C:\Users\Administrator\Desktop\sys\treasure\
-getResourcePath: http://39.106.81.100:9999/sys/treasure/
+ResourcePath: C:\Users\Administrator\Desktop\bookingsys\icon\
+getResourcePath: http://120.26.184.232:7777/sys/file/

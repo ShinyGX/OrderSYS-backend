@@ -19,4 +19,7 @@ public interface BookUserRepository extends JpaRepository<BookUser,Integer> {
             "where u.user_weibo_id=?1")
     MessageUser loginByWeibo(String weiboId);
 
+    @Query(value = "select * from book_user where user_phone=?1",nativeQuery = true)
+    BookUser findByPhone(String phone);
+
 }

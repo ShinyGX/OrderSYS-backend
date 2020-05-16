@@ -64,6 +64,17 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public BaseMessage<MessageUser> register(String phone, String pwd, String name) {
-        return null;
+
+        if(bookUserRepository.findByPhone(phone) != null)
+            return MessageInputUtil.baseMessageErrorInput("手机号已存在",ErrorCode.OBJECT_ALREADY_EXIST);
+
+        BookUser user = new BookUser();
+        user.setUser_phone(phone);
+        user.setUser_name(name);
+        user.setUser_password(pwd);
+        user = bookUserRepository.save(user);
+
+
+        return MessageInputUtil.baseMessageSuccessInput(new MessageUser(user.getUser_id(),user.getUser_name(),user.getUser_icon()));
     }
 }
