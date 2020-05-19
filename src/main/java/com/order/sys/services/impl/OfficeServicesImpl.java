@@ -42,7 +42,8 @@ public class OfficeServicesImpl implements OfficeServices {
     @Autowired
     private BookMissionRepository bookMissionRepository;
 
-
+    @Autowired
+    private ComBusinessRepository comBusinessRepository;
 
     @Override
     public BaseMessage<MessageOffice> getByOfficeId(Integer officeId) {
@@ -110,7 +111,7 @@ public class OfficeServicesImpl implements OfficeServices {
         ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
         if(sysOffice == null || comAccount == null)
             return MessageInputUtil.baseMessageErrorInput("UnknownError",ErrorCode.UNKNOWN_ERROR);
-        if((int)comAccount.getAccount_level_id() > (int)sysOffice.getLevel_id())
+        if((int)comAccount.getAccount_level_id() == (int)4)
             return MessageInputUtil.baseMessageErrorInput("Permission deny",ErrorCode.PERMISSION_DENY);
         List<MessageEverydayData> messageEverydayDataList = new ArrayList<>();
         for(int i = 0;i < 7;i++)
@@ -154,12 +155,16 @@ public class OfficeServicesImpl implements OfficeServices {
         }
 
         HashMap<String,Integer> value = new HashMap<>();
+        List<ComBusiness> cbl =  comBusinessRepository.findAll();
+
+        for (ComBusiness cb : cbl)
+        {
+            value.put(cb.getBusiness_desc(),0);
+        }
+
         for(MessageEverydayData data : messageEverydayDataList) {
             for (String key : data.getBusinessTypeValue().keySet()) {
-                if (value.containsKey(key))
-                    value.put(key, data.getBusinessTypeValue().get(key) + 1);
-                else
-                    value.put(key, 1);
+                value.put(key, data.getBusinessTypeValue().get(key) + 1);
             }
         }
 

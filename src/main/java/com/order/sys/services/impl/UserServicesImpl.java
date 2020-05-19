@@ -49,7 +49,13 @@ public class UserServicesImpl implements UserServices {
             bookUser.setUser_name(name);
 
         if(phone != null)
+        {
+            if(bookUserRepository.findByPhone(phone) != null)
+                return MessageInputUtil.baseMessageErrorInput("手机号已存在",ErrorCode.OBJECT_ALREADY_EXIST);
+
             bookUser.setUser_phone(phone);
+        }
+
 
         if(pwd != null)
             bookUser.setUser_password(pwd);

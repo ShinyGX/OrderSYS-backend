@@ -4,15 +4,15 @@ package com.order.sys.services.impl;
 import com.order.sys.bean.dto.BaseMessage;
 import com.order.sys.bean.dto.MessageWorking;
 import com.order.sys.bean.model.ComWindowUseful;
+import com.order.sys.bean.model.ComWorkTime;
 import com.order.sys.bean.model.ComWorking;
-import com.order.sys.bean.model.pk.WindowAccountId;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
 import com.order.sys.repository.ComWindowUsefulRepository;
+import com.order.sys.repository.ComWorkTimeRepository;
 import com.order.sys.repository.ComWorkingRepository;
 import com.order.sys.services.StaffRecodeServices;
 import com.order.sys.services.WorkingServices;
-import com.order.sys.util.FindObjUtil;
 import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,9 @@ public class WorkingServicesImpl implements WorkingServices {
 
     @Autowired
     private ComWindowUsefulRepository comWindowUsefulRepository;
+
+    @Autowired
+    private ComWorkTimeRepository comWorkTimeRepository;
 
     @Override
     public BaseMessage<MessageWorking> startWork(Integer accountId, Integer windowsId) {
@@ -68,5 +71,12 @@ public class WorkingServicesImpl implements WorkingServices {
                 StaffActionCode.END_WORK,
                 accountId,
                 accountId + "离开了窗口");
+    }
+
+    @Override
+    public BaseMessage<String> setTime(Integer officeId,Date time, String notice, String reason) {
+        ComWorkTime cwt = new ComWorkTime(officeId,time,notice,reason);
+        comWorkTimeRepository.save(cwt);
+        return MessageInputUtil.baseMessageSuccessInput("Success");
     }
 }
