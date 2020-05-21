@@ -55,4 +55,10 @@ public class MissionController {
     {
         return missionServices.getMissionList(id);
     }
+
+    @GetMapping("/cancel")
+    public BaseMessage<String> cancel(@RequestParam("id") Integer id)
+    {
+        return missionServices.cancel(id);
+    }
 }
