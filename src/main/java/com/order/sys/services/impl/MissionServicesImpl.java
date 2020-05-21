@@ -1,12 +1,8 @@
 package com.order.sys.services.impl;
 
 
-import com.order.sys.bean.dto.BaseMessage;
-import com.order.sys.bean.dto.MessageBook;
-import com.order.sys.bean.dto.MessageMission;
-import com.order.sys.bean.dto.MessageUser;
+import com.order.sys.bean.dto.*;
 import com.order.sys.bean.model.*;
-import com.order.sys.bean.model.pk.WindowAccountId;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
 import com.order.sys.repository.*;
@@ -119,5 +115,16 @@ public class MissionServicesImpl implements MissionServices {
         }
 
         return MessageInputUtil.baseMessageListInput("Network Error",list);
+    }
+
+    @Override
+    public BaseMessage<List<MessageMissionUser>> getMissionList(Integer userId) {
+        return MessageInputUtil.baseMessageListInput("无预约信息",bookMissionRepository.getUserMissionList(userId));
+    }
+
+    @Override
+    public BaseMessage<String> cancel(Integer missionId) {
+        bookMissionRepository.deleteById(missionId);
+        return MessageInputUtil.baseMessageSuccessInput("");
     }
 }

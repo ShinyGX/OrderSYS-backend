@@ -4,12 +4,10 @@ package com.order.sys.controller;
 import com.order.sys.bean.dto.BaseMessage;
 import com.order.sys.bean.dto.MessageBook;
 import com.order.sys.bean.dto.MessageMission;
+import com.order.sys.bean.dto.MessageMissionUser;
 import com.order.sys.services.MissionServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -50,5 +48,11 @@ public class MissionController {
     public BaseMessage<List<MessageBook>> getUsefulInfo(@RequestParam("id") Integer id)
     {
         return missionServices.getUsefulMission(id);
+    }
+
+    @GetMapping("/getUserMission")
+    public BaseMessage<List<MessageMissionUser>> getUserMission(@RequestParam("id") Integer id)
+    {
+        return missionServices.getMissionList(id);
     }
 }

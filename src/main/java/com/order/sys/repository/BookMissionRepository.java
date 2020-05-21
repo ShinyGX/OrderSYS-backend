@@ -2,6 +2,7 @@ package com.order.sys.repository;
 
 
 import com.order.sys.bean.dto.MessageBook;
+import com.order.sys.bean.dto.MessageMissionUser;
 import com.order.sys.bean.dto.internal.MessageBusinessRequestInternal;
 import com.order.sys.bean.dto.MessageMission;
 import com.order.sys.bean.model.BookMission;
@@ -91,4 +92,24 @@ public interface BookMissionRepository extends JpaRepository<BookMission,Integer
             " from ComBusiness b,ComBusinessType bt,BookMission m "+
             " where b.business_id=m.mission_business_id and m.mission_id=?1 and b.business_type_id=bt.business_type_id")
     MessageBusinessRequestInternal getBusinessNotDone(Integer mission_id);
+
+
+//    private Integer id;
+//    private String businessName;
+//    private String businessType;
+//    private String officeName;
+//    private String officeAddress;
+//    private Date missionTime;
+    @Query(value = "select new com.order.sys.bean.dto.MessageMissionUser(" +
+            "m.mission_id," +
+            "b.business_desc," +
+            "bt.business_type_desc," +
+            "o.office_desc," +
+            "o.office_address_desc," +
+            "m.mission_time," +
+            "m.mission_is_done) " +
+            "from BookMission m,ComBusinessType bt,ComBusiness b,SysOffice o " +
+            "where m.mission_user_id=?1 and m.mission_business_id=b.business_id and b.business_type_id=bt.business_type_id " +
+            "and m.mission_office_id=o.office_id order by m.mission_time desc")
+    List<MessageMissionUser> getUserMissionList(Integer userId);
 }
