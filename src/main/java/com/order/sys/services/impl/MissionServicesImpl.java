@@ -102,14 +102,32 @@ public class MissionServicesImpl implements MissionServices {
         List<MessageBook> list = bookMissionRepository.getUsefulInfo(officeId);
         for(MessageBook b : list)
         {
-            for(int i = 0;i < 4;i++)
+            for(int i = 1;i < 4;i++)
             {
                 Calendar cal = Calendar.getInstance();
-                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-
+                cal.set(Calendar.HOUR_OF_DAY,0);
+                cal.set(Calendar.MINUTE,0);
+                cal.set(Calendar.SECOND,0);
                 cal.add(Calendar.DATE,i);
-                Date date = cal.getTime();
-                b.getUsefulTime().add(date);
+                //cal.set(Calendar.HOUR_OF_DAY,9);
+                for(int j = 0;j < 3;j++) {
+                    cal.set(Calendar.HOUR_OF_DAY,9 + j);
+                    b.getUsefulTime().add(cal.getTime());
+                }
+
+                cal.set(Calendar.HOUR_OF_DAY,0);
+                cal.set(Calendar.MINUTE,0);
+                cal.set(Calendar.SECOND,0);
+                //cal.add(Calendar.HOUR_OF_DAY,14);
+                for(int j = 0;j < 3;j++)
+                {
+                    cal.set(Calendar.HOUR_OF_DAY,14 + j);
+                    b.getUsefulTime().add(cal.getTime());
+                }
+
+                //cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+//                Date date = cal.getTime();
+//                b.getUsefulTime().add(date);
             }
 
         }
