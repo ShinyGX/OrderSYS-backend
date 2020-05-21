@@ -20,4 +20,6 @@ public interface OfficeServices {
     BaseMessage<String> addOffice(ObjCreateOffice obj);
     BaseMessage<List<SysOfficeLevel>> getValidateLevel(Integer token);
     BaseMessage<MessageReport> getOfficeReport(Integer token, Integer officeId);
+    BaseMessage<MessageOfficeDetail> getOfficeDetail(Integer token,Integer officeId);
+
 }

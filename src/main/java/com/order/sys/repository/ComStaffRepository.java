@@ -2,6 +2,7 @@ package com.order.sys.repository;
 
 
 import com.order.sys.bean.dto.MessageStaff;
+import com.order.sys.bean.dto.internal.MessageOfficeInternal;
 import com.order.sys.bean.model.ComStaff;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -207,4 +208,14 @@ public interface ComStaffRepository extends JpaRepository<ComStaff,Integer> {
             " ac.account_level_id=l.level_id and " +
             " s.staff_city_id=c.city_id and s.staff_area_id=a.area_id and s.staff_office_id=o.office_id")
     List<MessageStaff> getStaffListByLevelAndNameOffice(String name, Integer levelId, Integer areaId);
+//
+//
+//    private String staffId;
+//    private String staffName;
+//    private String staffSex;
+    @Query(value = "select new com.order.sys.bean.dto.internal.MessageOfficeInternal(" +
+            "s.staff_id,s.staff_name,s.staff_sex) " +
+            "from ComStaff s " +
+            "where s.staff_office_id=?1")
+    List<MessageOfficeInternal> getStaffList(Integer officeId);
 }

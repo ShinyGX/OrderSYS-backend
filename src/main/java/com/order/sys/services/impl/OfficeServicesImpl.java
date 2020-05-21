@@ -3,6 +3,8 @@ package com.order.sys.services.impl;
 
 import com.order.sys.bean.dto.*;
 import com.order.sys.bean.dto.internal.MessageBusinessRequestInternal;
+import com.order.sys.bean.dto.internal.MessageOfficeBusinessInternal;
+import com.order.sys.bean.dto.internal.MessageOfficeInternal;
 import com.order.sys.bean.model.*;
 import com.order.sys.constants.AccountLevel;
 import com.order.sys.constants.ErrorCode;
@@ -20,6 +22,12 @@ import java.util.*;
 @Service
 public class OfficeServicesImpl implements OfficeServices {
 
+
+    @Autowired
+    private ComBusinessLevelRepository comBusinessLevelRepository;
+
+    @Autowired
+    private ComStaffRepository comStaffRepository;
 
     @Autowired
     private StaffRecodeServices staffRecodeServices;
@@ -171,5 +179,59 @@ public class OfficeServicesImpl implements OfficeServices {
         MessageReport messageReport = new MessageReport(messageEverydayDataList,value);
 
         return MessageInputUtil.baseMessageSuccessInput(messageReport);
+    }
+
+    @Override
+    public BaseMessage<MessageOfficeDetail> getOfficeDetail(Integer token, Integer officeId) {
+        ComStaff comStaff = FindObjUtil.permissionCheck(token,comAccountRepository,comStaffRepository);
+        if(comStaff == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
+
+        ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
+        int level = comAccount.getAccount_level_id();
+        boolean isCity = false,isArea = false;
+        int office = comStaff.getStaff_office_id();
+        if(level == 1 && office == (int)officeId)
+            isCity = true;
+        if(level == 2 && office == (int)officeId)
+            isArea = true;
+
+        List<Map<String,Object>> bll;
+        if(isCity)
+        {
+            bll = comBusinessLevelRepository.getBusinessList(1);
+        }
+        else if(isArea)
+        {
+            bll = comBusinessLevelRepository.getBusinessList(2);
+        }
+        else {
+            bll = comBusinessLevelRepository.getBusinessList(3);
+        }
+
+        List<MessageOfficeBusinessInternal> obi = new ArrayList<>();
+        for(Map<String,Object> map : bll)
+        {
+            MessageOfficeBusinessInternal messageOfficeBusinessInternal =
+                    new MessageOfficeBusinessInternal(
+                            (String)map.get("business_level_desc"),
+                            (String)map.get("business_desc"),
+                            (String)map.get("business_type_desc"));
+
+            obi.add(messageOfficeBusinessInternal);
+        }
+
+        List<MessageOfficeInternal> oil = comStaffRepository.getStaffList(officeId);
+        SysOffice sysOffice = FindObjUtil.findById(officeId,sysOfficeRepository);
+        if(sysOffice == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.OBJECT_NOT_FOUND);
+
+        MessageOfficeDetail messageOfficeDetail = new MessageOfficeDetail();
+        messageOfficeDetail.setOfficeDes(sysOffice.getOffice_desc());
+        messageOfficeDetail.setOfficeAddress(sysOffice.getOffice_address_desc());
+        messageOfficeDetail.setBusinessList(obi);
+        messageOfficeDetail.setStaffList(oil);
+
+        return MessageInputUtil.baseMessageSuccessInput(messageOfficeDetail);
     }
 }

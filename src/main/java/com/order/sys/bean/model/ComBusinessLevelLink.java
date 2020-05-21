@@ -12,7 +12,6 @@ import javax.persistence.*;
 public class ComBusinessLevelLink {
 
     @Id
-    @GeneratedValue(strategy =GenerationType.IDENTITY)
     @Column(name = "business_id")
     private Integer business_id;
 

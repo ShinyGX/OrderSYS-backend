@@ -74,4 +74,11 @@ public class OfficeController {
     {
         return officeServices.getOfficeReport(token, officeId);
     }
+
+    @PostMapping("/getDetail")
+    public BaseMessage<MessageOfficeDetail> getDetail(@RequestParam("token") Integer token,
+                                                      @RequestParam("officeId") Integer officeId)
+    {
+        return officeServices.getOfficeDetail(token,officeId);
+    }
 }

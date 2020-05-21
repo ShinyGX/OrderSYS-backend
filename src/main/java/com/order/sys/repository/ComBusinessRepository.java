@@ -1,6 +1,7 @@
 package com.order.sys.repository;
 
 
+import com.order.sys.bean.dto.internal.MessageOfficeBusinessInternal;
 import com.order.sys.bean.model.ComBusiness;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,6 @@ public interface ComBusinessRepository extends JpaRepository<ComBusiness,Integer
 
     @Query(value = "select business_desc from com_business where business_type_id=?1",nativeQuery = true)
     List<String> findByType(Integer typeId);
+
+
 }
