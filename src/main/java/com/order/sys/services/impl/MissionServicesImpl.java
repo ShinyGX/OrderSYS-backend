@@ -7,18 +7,25 @@ import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
 import com.order.sys.repository.*;
 import com.order.sys.services.MissionServices;
+import com.order.sys.services.SmsServices;
 import com.order.sys.services.StaffRecodeServices;
 import com.order.sys.util.FindObjUtil;
 import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class MissionServicesImpl implements MissionServices {
+
+
+    @Autowired
+    private SmsServices smsServices;
 
     @Autowired
     private BookMissionAccountLinkRepository bookMissionAccountLinkRepository;
@@ -37,6 +44,9 @@ public class MissionServicesImpl implements MissionServices {
     private BookMissionRepository bookMissionRepository;
     @Autowired
     private BookUserRepository bookUserRepository;
+
+    @Autowired
+    private SysOfficeRepository sysOfficeRepository;
 
     @Override
     public BaseMessage<MessageMission> getNext(Integer token, Integer businessTypeId) {
@@ -76,10 +86,18 @@ public class MissionServicesImpl implements MissionServices {
 
 
     @Override
-    public BaseMessage<String> addMission(Integer userId, Integer officeId, Integer businessId, Date time) {
+    public BaseMessage<Integer> addMission(Integer userId, Integer officeId, Integer businessId, Date time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         BookMission bookMission = new BookMission(businessId,userId,officeId,time,1);
-        bookMissionRepository.save(bookMission);
-        return MessageInputUtil.baseMessageSimpleInput("","success");
+        int count = bookMissionRepository.getCount(officeId,time);
+        bookMission.setMission_register_id(count);
+        bookMission = bookMissionRepository.save(bookMission);
+        BookUser bookUser = FindObjUtil.findById(userId,bookUserRepository);
+        SysOffice sysOffice = FindObjUtil.findById(officeId,sysOfficeRepository);
+        smsServices.returnOrderMessage(bookUser.getUser_phone(),bookUser.getUser_name(),
+                sysOffice.getOffice_desc(),sysOffice.getOffice_address_desc(),
+                String.valueOf(count),sdf.format(time));
+        return MessageInputUtil.baseMessageSimpleInput("",bookMission.getMission_id());
     }
 
     @Override

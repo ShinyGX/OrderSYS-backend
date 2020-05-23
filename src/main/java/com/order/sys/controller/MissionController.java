@@ -27,7 +27,7 @@ public class MissionController {
     }
 
     @PostMapping("/add")
-    public BaseMessage<String> addMission(
+    public BaseMessage<Integer> addMission(
             @RequestParam("userId") Integer userId,
             @RequestParam("officeId") Integer officeId,
             @RequestParam("businessId") Integer businessId,

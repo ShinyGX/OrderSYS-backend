@@ -55,4 +55,38 @@ public class SmsServicesImpl implements SmsServices {
 
         return MessageInputUtil.baseMessageErrorInput(ErrorCode.A_LI_YUN_API_ERROR);
     }
+
+    @Override
+    public BaseMessage<String> returnOrderMessage(
+            String phone,String name, String officeName, String officeAddress, String code, String time) {
+        DefaultProfile profile = DefaultProfile.getProfile(
+                "cn-hangzhou",ALiYunAPI.accessKey,ALiYunAPI.accessKeySecret);
+
+        try {
+            IAcsClient acsClient = new DefaultAcsClient(profile);
+
+
+            CommonRequest request = new CommonRequest();
+            request.setMethod(MethodType.POST);
+            request.setDomain("dysmsapi.aliyuncs.com");
+            request.setVersion("2017-05-25");
+            request.setAction("SendSms");
+            request.putQueryParameter("RegionId", "cn-hangzhou");
+            request.putQueryParameter("PhoneNumbers", phone);
+            request.putQueryParameter("SignName", "OrderSYS");
+            request.putQueryParameter("TemplateCode", "SMS_190727837");
+
+
+            String param = "{\"name\":" + name + ",\"office\":" + officeName + ",\"address\":" + officeAddress +
+                    ",\"time\":" + time + ",\"code\": "+code +"}";
+            request.putQueryParameter("TemplateParam",param);
+
+            CommonResponse response = acsClient.getCommonResponse(request);
+            return MessageInputUtil.baseMessageSuccessInput("");
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+
+        return MessageInputUtil.baseMessageErrorInput(ErrorCode.A_LI_YUN_API_ERROR);
+    }
 }

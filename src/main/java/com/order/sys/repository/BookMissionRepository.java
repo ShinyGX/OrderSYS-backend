@@ -112,4 +112,8 @@ public interface BookMissionRepository extends JpaRepository<BookMission,Integer
             "where m.mission_user_id=?1 and m.mission_business_id=b.business_id and b.business_type_id=bt.business_type_id " +
             "and m.mission_office_id=o.office_id order by m.mission_time desc")
     List<MessageMissionUser> getUserMissionList(Integer userId);
+
+
+    @Query(value = "select count(*) from book_mission where mission_office_id=?1 and mission_time=?2",nativeQuery = true)
+    Integer getCount(Integer officeId,Date time);
 }

@@ -30,6 +30,9 @@ public class BookMission {
     @Column(name = "mission_is_done")
     private Integer mission_is_done;
 
+    @Column(name = "mission_register_id")
+    private Integer mission_register_id;
+
     public BookMission(Integer mission_id, Integer mission_business_id, Integer mission_user_id, Integer mission_office_id, Date mission_time, Integer mission_is_done) {
         this.mission_id = mission_id;
         this.mission_business_id = mission_business_id;
@@ -45,6 +48,24 @@ public class BookMission {
         this.mission_office_id = mission_office_id;
         this.mission_time = mission_time;
         this.mission_is_done = mission_is_done;
+    }
+
+    public BookMission(Integer mission_id, Integer mission_business_id, Integer mission_user_id, Integer mission_office_id, Date mission_time, Integer mission_is_done, Integer mission_register_id) {
+        this.mission_id = mission_id;
+        this.mission_business_id = mission_business_id;
+        this.mission_user_id = mission_user_id;
+        this.mission_office_id = mission_office_id;
+        this.mission_time = mission_time;
+        this.mission_is_done = mission_is_done;
+        this.mission_register_id = mission_register_id;
+    }
+
+    public Integer getMission_register_id() {
+        return mission_register_id;
+    }
+
+    public void setMission_register_id(Integer mission_register_id) {
+        this.mission_register_id = mission_register_id;
     }
 
     public Date getMission_time() {
