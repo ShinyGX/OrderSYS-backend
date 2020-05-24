@@ -1,5 +1,7 @@
 package com.order.sys.bean.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -10,9 +12,11 @@ public class ComWorkTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "time_id")
+    @JsonIgnore
     private Integer time_id;
 
     @Column(name = "office_id")
+    @JsonIgnore
     private Integer office_id;
 
     @Column(name = "sleep_time")

@@ -9,6 +9,7 @@ import com.order.sys.bean.model.BookMission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 
@@ -114,6 +115,12 @@ public interface BookMissionRepository extends JpaRepository<BookMission,Integer
     List<MessageMissionUser> getUserMissionList(Integer userId);
 
 
-    @Query(value = "select count(*) from book_mission where mission_office_id=?1 and mission_time=?2",nativeQuery = true)
-    Integer getCount(Integer officeId,Date time);
+    @Query(value = "select count(*) from book_mission where mission_office_id=?1 and mission_time>=?2 && mission_time <=?3",nativeQuery = true)
+    Integer getCount(Integer officeId, Date time, Date time2);
+
+
+
+    @Query(value = "select * from book_mission where mission_office_id=?1 and mission_time >=?2 " +
+            "and mission_time<=?3",nativeQuery = true)
+    List<BookMission> getAllPassMission(Integer officeId,Date startTime,Date endTime);
 }

@@ -7,9 +7,19 @@ public class ObjCreateOffice {
     private String address;
     private Integer areaId;
     private Integer levelId;
+    private Integer officeLevel;
 
 
     public ObjCreateOffice() {
+    }
+
+    public ObjCreateOffice(Integer token, String name, String address, Integer areaId, Integer levelId, Integer officeLevel) {
+        this.token = token;
+        this.name = name;
+        this.address = address;
+        this.areaId = areaId;
+        this.levelId = levelId;
+        this.officeLevel = officeLevel;
     }
 
     public ObjCreateOffice(Integer token, String name, String address, Integer areaId, Integer levelId) {
@@ -18,6 +28,14 @@ public class ObjCreateOffice {
         this.address = address;
         this.areaId = areaId;
         this.levelId = levelId;
+    }
+
+    public Integer getOfficeLevel() {
+        return officeLevel;
+    }
+
+    public void setOfficeLevel(Integer officeLevel) {
+        this.officeLevel = officeLevel;
     }
 
     public Integer getLevelId() {

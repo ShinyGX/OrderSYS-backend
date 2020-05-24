@@ -14,8 +14,8 @@ import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +44,8 @@ public class MissionServicesImpl implements MissionServices {
     private BookMissionRepository bookMissionRepository;
     @Autowired
     private BookUserRepository bookUserRepository;
-
+    @Autowired
+    private ComBusinessRepository comBusinessRepository;
     @Autowired
     private SysOfficeRepository sysOfficeRepository;
 
@@ -68,6 +69,10 @@ public class MissionServicesImpl implements MissionServices {
         Integer officeId = comStaff.getStaff_office_id();
 
         MessageMission messageMission = bookMissionRepository.getNext(officeId,businessTypeId,beginOfDate,endOfDate);
+        BookMission bookMission = FindObjUtil.findById(messageMission.getMissionId(),bookMissionRepository);
+        bookMission.setMission_is_done(3);
+        bookMissionRepository.save(bookMission);
+
         if(messageMission == null)
             return MessageInputUtil.baseMessageErrorInput("It is last",ErrorCode.UNKNOWN_ERROR);
 
@@ -86,18 +91,32 @@ public class MissionServicesImpl implements MissionServices {
 
 
     @Override
-    public BaseMessage<Integer> addMission(Integer userId, Integer officeId, Integer businessId, Date time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    public BaseMessage<MessageMissionAddResult> addMission(Integer userId, Integer officeId, Integer businessId, Date time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         BookMission bookMission = new BookMission(businessId,userId,officeId,time,1);
-        int count = bookMissionRepository.getCount(officeId,time);
-        bookMission.setMission_register_id(count);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.add(Calendar.HOUR,1);
+        int count = bookMissionRepository.getCount(officeId,time,calendar.getTime());
+        bookMission.setMission_register_id(count + 1);
         bookMission = bookMissionRepository.save(bookMission);
         BookUser bookUser = FindObjUtil.findById(userId,bookUserRepository);
         SysOffice sysOffice = FindObjUtil.findById(officeId,sysOfficeRepository);
-        smsServices.returnOrderMessage(bookUser.getUser_phone(),bookUser.getUser_name(),
-                sysOffice.getOffice_desc(),sysOffice.getOffice_address_desc(),
-                String.valueOf(count),sdf.format(time));
-        return MessageInputUtil.baseMessageSimpleInput("",bookMission.getMission_id());
+//        smsServices.returnOrderMessage(bookUser.getUser_phone(),bookUser.getUser_name(),
+//                sysOffice.getOffice_desc(),sysOffice.getOffice_address_desc(),
+//                String.valueOf(count),sdf.format(time));
+        ComBusiness business = FindObjUtil.findById(businessId,comBusinessRepository);
+
+        MessageMissionAddResult missionAddResult = new MessageMissionAddResult(
+                bookMission.getMission_id(),
+                bookUser.getUser_phone(),
+                bookUser.getUser_name(),
+                sysOffice.getOffice_desc(),
+                sysOffice.getOffice_address_desc(),
+                business.getBusiness_desc(),
+                sdf.format(time),
+                count + 1);
+        return MessageInputUtil.baseMessageSuccessInput(missionAddResult);
     }
 
     @Override
@@ -128,7 +147,7 @@ public class MissionServicesImpl implements MissionServices {
                 cal.set(Calendar.SECOND,0);
                 cal.add(Calendar.DATE,i);
                 //cal.set(Calendar.HOUR_OF_DAY,9);
-                for(int j = 0;j < 3;j++) {
+                for(int j = 0;j < 1;j++) {
                     cal.set(Calendar.HOUR_OF_DAY,9 + j);
                     b.getUsefulTime().add(cal.getTime());
                 }
@@ -137,7 +156,7 @@ public class MissionServicesImpl implements MissionServices {
                 cal.set(Calendar.MINUTE,0);
                 cal.set(Calendar.SECOND,0);
                 //cal.add(Calendar.HOUR_OF_DAY,14);
-                for(int j = 0;j < 3;j++)
+                for(int j = 0;j < 1;j++)
                 {
                     cal.set(Calendar.HOUR_OF_DAY,14 + j);
                     b.getUsefulTime().add(cal.getTime());
@@ -162,5 +181,51 @@ public class MissionServicesImpl implements MissionServices {
     public BaseMessage<String> cancel(Integer missionId) {
         bookMissionRepository.deleteById(missionId);
         return MessageInputUtil.baseMessageSuccessInput("");
+    }
+
+    @Override
+    public BaseMessage<MessageMission> back(Integer missionId) {
+        BookMission bookMission = FindObjUtil.findById(missionId,bookMissionRepository);
+        bookMission.setMission_is_done(1);
+        bookMissionRepository.save(bookMission);
+        MessageMission messageMission = new MessageMission();
+        messageMission.setBusinessId(bookMission.getMission_id());
+        return MessageInputUtil.baseMessageSuccessInput(messageMission);
+    }
+
+    @Override
+    public BaseMessage<List<MessageMission>> getAllPassMission(Integer officeId, Date time) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+
+        List<BookMission> bookMissions;
+        if(time.after(cal.getTime()))
+        {
+            cal.set(Calendar.HOUR_OF_DAY,8);
+            cal.set(Calendar.MINUTE,0);
+            cal.set(Calendar.SECOND,0);
+            Date startTime = cal.getTime();
+
+            bookMissions = bookMissionRepository.getAllPassMission(officeId,startTime,time);
+        }
+        else
+        {
+            cal.set(Calendar.HOUR_OF_DAY,13);
+            cal.set(Calendar.MINUTE,0);
+            cal.set(Calendar.SECOND,0);
+            Date startTime = cal.getTime();
+
+            bookMissions = bookMissionRepository.getAllPassMission(officeId,startTime,time);
+        }
+
+        List<MessageMission> mml = new ArrayList<>();
+        for(BookMission bookMission : bookMissions)
+        {
+            MessageMission mm = bookMissionRepository.getMissionMessageById(bookMission.getMission_id());
+            mml.add(mm);
+        }
+        return MessageInputUtil.baseMessageSuccessInput(mml);
     }
 }

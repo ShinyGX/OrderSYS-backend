@@ -1,10 +1,7 @@
 package com.order.sys.controller;
 
 
-import com.order.sys.bean.dto.BaseMessage;
-import com.order.sys.bean.dto.MessageBook;
-import com.order.sys.bean.dto.MessageMission;
-import com.order.sys.bean.dto.MessageMissionUser;
+import com.order.sys.bean.dto.*;
 import com.order.sys.services.MissionServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +24,7 @@ public class MissionController {
     }
 
     @PostMapping("/add")
-    public BaseMessage<Integer> addMission(
+    public BaseMessage<MessageMissionAddResult> addMission(
             @RequestParam("userId") Integer userId,
             @RequestParam("officeId") Integer officeId,
             @RequestParam("businessId") Integer businessId,
@@ -62,4 +59,6 @@ public class MissionController {
     {
         return missionServices.cancel(id);
     }
+
+
 }

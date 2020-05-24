@@ -3,6 +3,7 @@ package com.order.sys.controller;
 
 import com.order.sys.bean.dto.BaseMessage;
 import com.order.sys.bean.dto.MessageWorking;
+import com.order.sys.bean.model.ComWorkTime;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.services.WorkingServices;
 import com.order.sys.util.MessageInputUtil;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/work")
@@ -51,5 +53,16 @@ public class WorkingController {
         }
 
         return MessageInputUtil.baseMessageErrorInput(ErrorCode.UNKNOWN_ERROR);
+    }
+
+    @PostMapping("/getSleepTime")
+    public BaseMessage<List<ComWorkTime>> getSleepTime(@RequestParam("token") Integer token,
+                                                       @RequestParam("month") Integer month)
+    {
+        int m = month;
+        if(m < 1 || m > 12)
+            return MessageInputUtil.baseMessageErrorInput("月份错误",ErrorCode.UNKNOWN_ERROR);
+
+        return workingServices.getTime(token,month);
     }
 }

@@ -3,27 +3,35 @@ package com.order.sys.services.impl;
 
 import com.order.sys.bean.dto.BaseMessage;
 import com.order.sys.bean.dto.MessageWorking;
+import com.order.sys.bean.model.ComStaff;
 import com.order.sys.bean.model.ComWindowUseful;
 import com.order.sys.bean.model.ComWorkTime;
 import com.order.sys.bean.model.ComWorking;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
-import com.order.sys.repository.ComWindowUsefulRepository;
-import com.order.sys.repository.ComWorkTimeRepository;
-import com.order.sys.repository.ComWorkingRepository;
+import com.order.sys.repository.*;
 import com.order.sys.services.StaffRecodeServices;
 import com.order.sys.services.WorkingServices;
+import com.order.sys.util.FindObjUtil;
 import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class WorkingServicesImpl implements WorkingServices {
 
     @Autowired
     private StaffRecodeServices staffRecodeServices;
+
+    @Autowired
+    private ComAccountRepository comAccountRepository;
+
+    @Autowired
+    private ComStaffRepository comStaffRepository;
 
     @Autowired
     private ComWorkingRepository comWorkingRepository;
@@ -78,5 +86,29 @@ public class WorkingServicesImpl implements WorkingServices {
         ComWorkTime cwt = new ComWorkTime(officeId,time,notice,reason);
         comWorkTimeRepository.save(cwt);
         return MessageInputUtil.baseMessageSuccessInput("Success");
+    }
+
+    @Override
+    public BaseMessage<List<ComWorkTime>> getTime(Integer token, Integer month) {
+
+        ComStaff comStaff = FindObjUtil.permissionCheck(token,comAccountRepository,comStaffRepository);
+        if(comStaff == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
+
+        month = month - 1;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH,month );
+        cal.set(Calendar.DAY_OF_MONTH,1);
+        Date startDate = cal.getTime();
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH,month);
+        cal.add(Calendar.MONTH,1);
+        cal.set(Calendar.DAY_OF_MONTH,0);
+
+        Date endDate = cal.getTime();
+
+
+        return MessageInputUtil.baseMessageSuccessInput(comWorkTimeRepository.findByTime(comStaff.getStaff_office_id(),startDate,endDate));
     }
 }

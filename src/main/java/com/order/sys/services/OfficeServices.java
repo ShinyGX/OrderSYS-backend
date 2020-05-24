@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface OfficeServices {
 
+    BaseMessage<List<MessageOffice>> getOffices(Integer token);
     BaseMessage<MessageOffice> getByOfficeId(Integer officeId);
     BaseMessage<List<MessageOffice>> getByAreaOffices(Integer areaId);
     BaseMessage<List<MessageOffice>> getByCityOffices(Integer cityId);
@@ -21,5 +22,5 @@ public interface OfficeServices {
     BaseMessage<List<SysOfficeLevel>> getValidateLevel(Integer token);
     BaseMessage<MessageReport> getOfficeReport(Integer token, Integer officeId);
     BaseMessage<MessageOfficeDetail> getOfficeDetail(Integer token,Integer officeId);
-
+    BaseMessage<MessageOfficeUsefulResult> getOfficeUsefulResult(Integer token);
 }

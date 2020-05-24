@@ -54,6 +54,37 @@ public class OfficeServicesImpl implements OfficeServices {
     private ComBusinessRepository comBusinessRepository;
 
     @Override
+    public BaseMessage<List<MessageOffice>> getOffices(Integer token) {
+        ComStaff comStaff = FindObjUtil.permissionCheck(token,comAccountRepository,comStaffRepository);
+        if(comStaff == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
+
+        ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
+        int level = comAccount.getAccount_level_id();
+        boolean isCity = level == 1;
+        boolean isOffice = level == 3;
+        boolean isArea = level == 2;
+
+
+        if(isCity)
+        {
+            return getByCityOffices(comStaff.getStaff_city_id());
+        }
+        if(isArea)
+        {
+            return getByAreaOffices(comStaff.getStaff_area_id());
+        }
+        if(isOffice)
+        {
+            List<MessageOffice> office = new ArrayList<>();
+            office.add(getByOfficeId(comStaff.getStaff_office_id()).getData());
+            return MessageInputUtil.baseMessageSuccessInput(office);
+        }
+
+        return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
+    }
+
+    @Override
     public BaseMessage<MessageOffice> getByOfficeId(Integer officeId) {
         MessageOffice officeMessage = sysOfficeRepository.getOfficeMessage(officeId);
         return MessageInputUtil.baseMessageSimpleInput("Office Id 不存在",officeMessage);
@@ -233,5 +264,71 @@ public class OfficeServicesImpl implements OfficeServices {
         messageOfficeDetail.setStaffList(oil);
 
         return MessageInputUtil.baseMessageSuccessInput(messageOfficeDetail);
+    }
+
+    @Override
+    public BaseMessage<MessageOfficeUsefulResult> getOfficeUsefulResult(Integer token) {
+        ComStaff comStaff = FindObjUtil.permissionCheck(token,comAccountRepository,comStaffRepository);
+        if(comStaff == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
+
+
+        ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
+        boolean isCity = comAccount.getAccount_level_id() == 1;
+        boolean isArea = comAccount.getAccount_level_id() == 2;
+
+        MessageOfficeUsefulResult messageOfficeUsefulResult = new MessageOfficeUsefulResult();
+        if(isCity)
+        {
+            List<SysCity> cityList = getCity().getData();
+            for(SysCity sysCity : cityList)
+            {
+                if((int)sysCity.getCity_id() == (int)comStaff.getStaff_city_id())
+                {
+                    messageOfficeUsefulResult.setCityName(sysCity.getCity_desc());
+                    messageOfficeUsefulResult.setCityId(sysCity.getCity_id());
+                    List<SysArea> areaList = getArea(sysCity.getCity_id()).getData();
+                    Map<String,Integer> areaDesc = new HashMap<>();
+                    for(SysArea area : areaList)
+                    {
+                        areaDesc.put(area.getArea_desc(),area.getArea_id());
+                    }
+
+                    Map<String,Integer> officeLevel = new HashMap<>();
+                    officeLevel.put("区级营业厅",2);
+                    officeLevel.put("普通营业厅",3);
+
+                    messageOfficeUsefulResult.setArea(areaDesc);
+                    messageOfficeUsefulResult.setOfficeLevel(officeLevel);
+
+                    return MessageInputUtil.baseMessageSuccessInput(messageOfficeUsefulResult);
+                }
+            }
+        }
+
+        if(isArea)
+        {
+            List<SysCity> cityList = getCity().getData();
+            for(SysCity sysCity : cityList)
+            {
+                if((int)sysCity.getCity_id() == (int)comStaff.getStaff_city_id())
+                {
+                    messageOfficeUsefulResult.setCityName(sysCity.getCity_desc());
+                    messageOfficeUsefulResult.setCityId(sysCity.getCity_id());
+                    SysArea sysArea = FindObjUtil.findById(comStaff.getStaff_area_id(),sysAreaRepository);
+                    Map<String,Integer> areaDesc = new HashMap<>();
+                    areaDesc.put(sysArea.getArea_desc(),sysArea.getArea_id());
+                    Map<String,Integer> officeLevel = new HashMap<>();
+                    officeLevel.put("普通营业厅",3);
+
+                    messageOfficeUsefulResult.setArea(areaDesc);
+                    messageOfficeUsefulResult.setOfficeLevel(officeLevel);
+
+                    return MessageInputUtil.baseMessageSuccessInput(messageOfficeUsefulResult);
+                }
+            }
+        }
+
+        return MessageInputUtil.baseMessageErrorInput("只有市级/区级管理员才能建立新的营业厅",ErrorCode.PERMISSION_DENY);
     }
 }

@@ -43,6 +43,12 @@ public class OfficeController {
         return officeServices.getByOfficeId(id);
     }
 
+    @PostMapping("/getOffices")
+    public BaseMessage<List<MessageOffice>> getOffices(@RequestParam("token") Integer token)
+    {
+        return officeServices.getOffices(token);
+    }
+
     @PostMapping("/getCityOffices")
     public BaseMessage<List<MessageOffice>> getOfficeMessageByCity(@RequestParam("cityId") Integer id)
     {
@@ -80,5 +86,11 @@ public class OfficeController {
                                                       @RequestParam("officeId") Integer officeId)
     {
         return officeServices.getOfficeDetail(token,officeId);
+    }
+
+    @PostMapping("/getUseful")
+    public BaseMessage<MessageOfficeUsefulResult> getUsefulResult(@RequestParam("token") Integer token)
+    {
+        return officeServices.getOfficeUsefulResult(token);
     }
 }

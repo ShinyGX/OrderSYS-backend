@@ -36,8 +36,8 @@ public class BusinessServicesImpl implements BusinessServices {
     private ComBusinessTypeRepository comBusinessTypeRepository;
     @Autowired
     private ComBusinessWindowsLinkRepository comBusinessWindowsLinkRepository;
-
-
+    @Autowired
+    private ComBusinessLevelLinkRepository comBusinessLevelLinkRepository;
     @Autowired
     private ComStaffRepository comStaffRepository;
 
@@ -200,6 +200,10 @@ public class BusinessServicesImpl implements BusinessServices {
         {
             comBusinessWindowsLinkRepository.deleteById(obj.getId());
         }
+
+
+        ComBusinessLevelLink comBusinessLevelLink = comBusinessLevelLinkRepository.findByBusinessId(businessId);
+        comBusinessLevelLinkRepository.delete(comBusinessLevelLink);
 
         comBusinessRepository.deleteById(businessId);
 

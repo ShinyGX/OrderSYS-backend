@@ -2,10 +2,7 @@ package com.order.sys.services.impl;
 
 
 import com.order.sys.bean.dto.*;
-import com.order.sys.bean.model.ComAccount;
-import com.order.sys.bean.model.ComStaff;
-import com.order.sys.bean.model.ComWindowUseful;
-import com.order.sys.bean.model.ComWindows;
+import com.order.sys.bean.model.*;
 import com.order.sys.bean.model.pk.WindowAccountId;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.constants.StaffActionCode;
@@ -39,16 +36,30 @@ public class WindowServicesImpl implements WindowServices {
     @Autowired
     private BookMissionRepository bookMissionRepository;
 
+    @Autowired
+    private ComBusinessWindowsLinkRepository comBusinessWindowsLinkRepository;
+
     @Override
     public BaseMessage<String> addWindow(ObjCreateWindow obj) {
         ComStaff comStaff = FindObjUtil.permissionCheck(obj.getToken(),comAccountRepository,comStaffRepository);
         if(comStaff == null || (int)comStaff.getStaff_office_id() != (int)obj.getOfficeId())
             return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
 
+        List<ComBusiness> comBusinessList = comBusinessRepository.getByType(obj.getBusinessTypeId());
+
         ComWindows comWindows = new ComWindows(obj.getWindowName(),obj.getBusinessTypeId(),obj.getOfficeId());
         comWindows = comWindowsRepository.save(comWindows);
         ComWindowUseful comWindowUseful = new ComWindowUseful(comWindows.getWindow_id(),-1,0);
         comWindowUsefulRepository.save(comWindowUseful);
+
+        for(ComBusiness cb : comBusinessList)
+        {
+            ComBusinessWindowLink comBusinessWindowLink = new ComBusinessWindowLink();
+            comBusinessWindowLink.setCom_business_id(cb.getBusiness_id());
+            comBusinessWindowLink.setCom_business_windows_id(comWindows.getWindow_id());
+            comBusinessWindowsLinkRepository.save(comBusinessWindowLink);
+        }
+
         return MessageInputUtil.baseMessageSimpleInputRecode("","success",
                 staffRecodeServices,StaffActionCode.CREATE_WINDOWS,obj.getToken(),
                 obj.getToken()+ ":创建了窗口->"+obj.getWindowName() + "\nWindowsId:"+ comWindows.getWindow_id());
@@ -74,6 +85,13 @@ public class WindowServicesImpl implements WindowServices {
         if(comWindows == null)
             return MessageInputUtil.baseMessageErrorInput("Window Not Found",ErrorCode.OBJECT_NOT_FOUND);
         comWindows.setIs_use(2);
+
+        List<ComBusinessWindowLink> cbwll = comBusinessWindowsLinkRepository.findAllByWindowsId(windowId);
+        for(ComBusinessWindowLink cbwl : cbwll)
+        {
+            comBusinessWindowsLinkRepository.delete(cbwl);
+        }
+
         comWindows = comWindowsRepository.save(comWindows);
         ComWindowUseful comWindowUseful = comWindowUsefulRepository.getByWindowId(comWindows.getWindow_id());
         comWindowUsefulRepository.delete(comWindowUseful);
@@ -132,6 +150,21 @@ public class WindowServicesImpl implements WindowServices {
         comWindows.setBusiness_type_id(obj.getBusinessTypeId());
         comWindows.setWindow_desc(obj.getWindowName());
         comWindowsRepository.save(comWindows);
+
+
+        List<ComBusinessWindowLink> cbwll = comBusinessWindowsLinkRepository.findAllByWindowsId(comWindows.getWindow_id());
+        for(ComBusinessWindowLink cbwl : cbwll)
+        {
+            comBusinessWindowsLinkRepository.delete(cbwl);
+        }
+
+        List<ComBusiness> cbl = comBusinessRepository.getByType(obj.getBusinessTypeId());
+        for(ComBusiness cb : cbl)
+        {
+            ComBusinessWindowLink comBusinessWindowLink = new ComBusinessWindowLink();
+            comBusinessWindowLink.setCom_business_id(cb.getBusiness_id());
+            comBusinessWindowLink.setCom_business_windows_id(obj.getWindowId());
+        }
 
         return MessageInputUtil.baseMessageSimpleInputRecode("","success",
                 staffRecodeServices,StaffActionCode.RESET_WINDOWS,obj.getToken(),

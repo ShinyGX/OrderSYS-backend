@@ -20,5 +20,7 @@ public interface ComBusinessRepository extends JpaRepository<ComBusiness,Integer
     @Query(value = "select business_desc from com_business where business_type_id=?1",nativeQuery = true)
     List<String> findByType(Integer typeId);
 
+    @Query(value = "select * from com_business where business_type_id=?1",nativeQuery = true)
+    List<ComBusiness> getByType(Integer typeId);
 
 }

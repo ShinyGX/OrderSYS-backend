@@ -15,4 +15,7 @@ public interface ComBusinessWindowsLinkRepository extends JpaRepository<ComBusin
     List<ComBusinessWindowLink> findAllByBusinessId(Integer businessId);
 
 
+    @Query(value = "select * from com_business_window_link where com_business_windows_id=?1",nativeQuery = true)
+    List<ComBusinessWindowLink> findAllByWindowsId(Integer windowsId);
+
 }
