@@ -9,6 +9,8 @@ import com.order.sys.repository.*;
 import com.order.sys.services.MissionServices;
 import com.order.sys.services.SmsServices;
 import com.order.sys.services.StaffRecodeServices;
+import com.order.sys.services.WorkingServices;
+import com.order.sys.util.DateUtils;
 import com.order.sys.util.FindObjUtil;
 import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,9 @@ public class MissionServicesImpl implements MissionServices {
     private ComBusinessRepository comBusinessRepository;
     @Autowired
     private SysOfficeRepository sysOfficeRepository;
+
+    @Autowired
+    private WorkingServices workingServices;
 
     @Override
     public BaseMessage<MessageMission> getNext(Integer token, Integer businessTypeId) {
@@ -137,11 +142,15 @@ public class MissionServicesImpl implements MissionServices {
     @Override
     public BaseMessage<List<MessageBook>> getUsefulMission(Integer officeId) {
         List<MessageBook> list = bookMissionRepository.getUsefulInfo(officeId);
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH) + 1;
+        List<ComWorkTime> comWorkTimes = workingServices.getTimeByOfficeId(officeId,month);
         for(MessageBook b : list)
         {
-            for(int i = 1;i < 4;i++)
+            for(int i = 0;i < 4;i++)
             {
                 Calendar cal = Calendar.getInstance();
+                Calendar cal2 = Calendar.getInstance();
                 cal.set(Calendar.HOUR_OF_DAY,0);
                 cal.set(Calendar.MINUTE,0);
                 cal.set(Calendar.SECOND,0);
@@ -149,7 +158,26 @@ public class MissionServicesImpl implements MissionServices {
                 //cal.set(Calendar.HOUR_OF_DAY,9);
                 for(int j = 0;j < 1;j++) {
                     cal.set(Calendar.HOUR_OF_DAY,9 + j);
-                    b.getUsefulTime().add(cal.getTime());
+                    if(cal2.getTime().after(cal.getTime()))
+                        break;
+                    boolean isTheSameDay = false;
+                    for(ComWorkTime cwt : comWorkTimes)
+                    {
+                        Calendar cal3 = Calendar.getInstance();
+                        cal3.setTime(cwt.getSleep_time());
+                        if(DateUtils.sameDate(cal.getTime(),cal3.getTime()))
+                        {
+                            isTheSameDay = true;
+                            break;
+                        }
+                    }
+                    if(isTheSameDay)
+                        continue;
+                    Calendar cal1 = Calendar.getInstance();
+                    cal1.setTime(cal.getTime());
+                    cal1.add(Calendar.HOUR_OF_DAY,1);
+                    int count = bookMissionRepository.getCount(officeId,cal.getTime(),cal1.getTime());
+                    b.getUsefulTime().put(cal.getTime(),count);
                 }
 
                 cal.set(Calendar.HOUR_OF_DAY,0);
@@ -159,7 +187,25 @@ public class MissionServicesImpl implements MissionServices {
                 for(int j = 0;j < 1;j++)
                 {
                     cal.set(Calendar.HOUR_OF_DAY,14 + j);
-                    b.getUsefulTime().add(cal.getTime());
+                    if(cal2.getTime().after(cal.getTime()))
+                        break;
+                    boolean isTheSameDay = false;
+                    for(ComWorkTime cwt : comWorkTimes)
+                    {
+                        if(DateUtils.sameDate(cal.getTime(),cwt.getSleep_time()))
+                        {
+                            isTheSameDay = true;
+                            break;
+                        }
+                    }
+                    if(isTheSameDay)
+                        continue;
+
+                    Calendar cal1 = Calendar.getInstance();
+                    cal1.setTime(cal.getTime());
+                    cal1.add(Calendar.HOUR_OF_DAY,1);
+                    int count = bookMissionRepository.getCount(officeId,cal.getTime(),cal1.getTime());
+                    b.getUsefulTime().put(cal.getTime(),count);
                 }
 
                 //cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
@@ -169,7 +215,7 @@ public class MissionServicesImpl implements MissionServices {
 
         }
 
-        return MessageInputUtil.baseMessageListInput("Network Error",list);
+        return MessageInputUtil.baseMessageListInput("该营业厅无业务提供",list);
     }
 
     @Override

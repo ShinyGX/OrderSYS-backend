@@ -13,4 +13,5 @@ public interface WorkingServices {
     BaseMessage<String> endWork(Integer accountId);
     BaseMessage<String> setTime(Integer officeId, Date time,String notice,String reason);
     BaseMessage<List<ComWorkTime>> getTime(Integer token, Integer month);
+    List<ComWorkTime> getTimeByOfficeId(Integer officeId,Integer month);
 }

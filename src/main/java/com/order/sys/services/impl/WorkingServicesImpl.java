@@ -111,4 +111,23 @@ public class WorkingServicesImpl implements WorkingServices {
 
         return MessageInputUtil.baseMessageSuccessInput(comWorkTimeRepository.findByTime(comStaff.getStaff_office_id(),startDate,endDate));
     }
+
+    @Override
+    public List<ComWorkTime> getTimeByOfficeId(Integer officeId, Integer month) {
+
+        month = month - 1;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH,month );
+        cal.set(Calendar.DAY_OF_MONTH,1);
+        Date startDate = cal.getTime();
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH,month);
+        cal.add(Calendar.MONTH,1);
+        cal.set(Calendar.DAY_OF_MONTH,0);
+
+        Date endDate = cal.getTime();
+
+        return comWorkTimeRepository.findByTime(officeId,startDate,endDate);
+    }
 }

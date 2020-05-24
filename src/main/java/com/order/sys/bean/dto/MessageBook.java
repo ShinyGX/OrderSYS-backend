@@ -3,7 +3,8 @@ package com.order.sys.bean.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageBook {
 
@@ -11,19 +12,19 @@ public class MessageBook {
     private Integer businessId;
     private String businessName;
     private String businessDesc;
-    private List<Date> usefulTime;
+    private Map<Date, Integer> usefulTime;
 
     public MessageBook(Integer businessId, String businessName, String businessDesc) {
         this.businessId = businessId;
         this.businessName = businessName;
         this.businessDesc = businessDesc;
-        usefulTime = new ArrayList<>();
+        usefulTime = new HashMap<>();
     }
 
     public MessageBook() {
     }
 
-    public MessageBook(Integer businessId, String businessName, String businessDesc, List<Date> usefulTime) {
+    public MessageBook(Integer businessId, String businessName, String businessDesc, Map<Date, Integer> usefulTime) {
         this.businessId = businessId;
         this.businessName = businessName;
         this.businessDesc = businessDesc;
@@ -54,11 +55,11 @@ public class MessageBook {
         this.businessDesc = businessDesc;
     }
 
-    public List<Date> getUsefulTime() {
+    public Map<Date, Integer> getUsefulTime() {
         return usefulTime;
     }
 
-    public void setUsefulTime(List<Date> usefulTime) {
+    public void setUsefulTime(Map<Date, Integer> usefulTime) {
         this.usefulTime = usefulTime;
     }
 }
