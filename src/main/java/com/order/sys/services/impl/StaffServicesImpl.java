@@ -213,5 +213,23 @@ public class StaffServicesImpl implements StaffServices {
         return login(account.getAccount_username(),account.getAccount_password());
     }
 
+    @Override
+    public BaseMessage<List<MessageStaff>> getStaffList(String name, Integer targetLevel, Integer token) {
+        ComStaff comStaff = FindObjUtil.permissionCheck(token,comAccountRepository,comStaffRepository);
+        if(comStaff == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.PERMISSION_DENY);
+
+
+        ComAccount comAccount = FindObjUtil.findById(token,comAccountRepository);
+        int level = comAccount.getAccount_level_id();
+
+        if(level == 1)
+            return searchStaffList(name,targetLevel,level,comStaff.getStaff_city_id());
+        else if(level == 2)
+            return searchStaffList(name,targetLevel,level,comStaff.getStaff_area_id());
+        else
+            return searchStaffList(name,targetLevel,level,comStaff.getStaff_office_id());
+    }
+
 
 }

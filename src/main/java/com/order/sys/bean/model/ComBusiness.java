@@ -20,6 +20,9 @@ public class ComBusiness {
     @Column(name = "business_type_id")
     private Integer business_type_id;
 
+    @Column(name = "is_delete")
+    private Integer is_delete;
+
     public ComBusiness(Integer business_id, String business_desc, String business_detail) {
         this.business_id = business_id;
         this.business_desc = business_desc;
@@ -31,6 +34,14 @@ public class ComBusiness {
         this.business_desc = business_desc;
         this.business_detail = business_detail;
         this.business_type_id = business_type_id;
+    }
+
+    public ComBusiness(Integer business_id, String business_desc, String business_detail, Integer business_type_id, Integer is_delete) {
+        this.business_id = business_id;
+        this.business_desc = business_desc;
+        this.business_detail = business_detail;
+        this.business_type_id = business_type_id;
+        this.is_delete = is_delete;
     }
 
     public ComBusiness() {
@@ -50,6 +61,14 @@ public class ComBusiness {
     public ComBusiness(String business_desc, String business_detail) {
         this.business_desc = business_desc;
         this.business_detail = business_detail;
+    }
+
+    public Integer getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(Integer is_delete) {
+        this.is_delete = is_delete;
     }
 
     public Integer getBusiness_type_id() {

@@ -5,6 +5,7 @@ import com.order.sys.bean.dto.BaseMessage;
 import com.order.sys.bean.dto.MessageStaff;
 import com.order.sys.bean.dto.ObjCreateAccount;
 import com.order.sys.services.StaffServices;
+import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +73,13 @@ public class StaffController {
         return staffServices.searchStaffList(name,role,levelId,areaId);
     }
 
+    @PostMapping("/getStaff")
+    public BaseMessage<List<MessageStaff>> getStaff(@RequestParam(value = "name",required = false)  String name,
+                                                    @RequestParam(value = "role",required = false)  Integer role,
+                                                    @RequestParam("token") Integer token)
+    {
+        return staffServices.getStaffList(name,role,token);
+    }
 
     @PostMapping("/delete")
     public BaseMessage<String> deleteAccount(

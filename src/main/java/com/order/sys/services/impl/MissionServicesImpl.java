@@ -1,6 +1,7 @@
 package com.order.sys.services.impl;
 
 
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import com.order.sys.bean.dto.*;
 import com.order.sys.bean.model.*;
 import com.order.sys.constants.ErrorCode;
@@ -73,25 +74,28 @@ public class MissionServicesImpl implements MissionServices {
 
         Integer officeId = comStaff.getStaff_office_id();
 
-        MessageMission messageMission = bookMissionRepository.getNext(officeId,businessTypeId,beginOfDate,endOfDate);
-        BookMission bookMission = FindObjUtil.findById(messageMission.getMissionId(),bookMissionRepository);
+        List<MessageMission> messageMission = bookMissionRepository.getNext(officeId,businessTypeId,beginOfDate,endOfDate);
+        if(messageMission == null || messageMission.size() == 0)
+        {
+            return MessageInputUtil.baseMessageErrorInput("这个时段已经没有预约了",ErrorCode.UNKNOWN_ERROR);
+        }
+
+        BookMission bookMission = FindObjUtil.findById(messageMission.get(0).getMissionId(),bookMissionRepository);
         bookMission.setMission_is_done(3);
         bookMissionRepository.save(bookMission);
 
-        if(messageMission == null)
-            return MessageInputUtil.baseMessageErrorInput("It is last",ErrorCode.UNKNOWN_ERROR);
 
-        BookUser bookUser = FindObjUtil.findById(messageMission.getUserId(),bookUserRepository);
+        BookUser bookUser = FindObjUtil.findById(messageMission.get(0).getUserId(),bookUserRepository);
         if(bookUser == null)
             return MessageInputUtil.baseMessageErrorInput("Unknown User",ErrorCode.UNKNOWN_ERROR);
 
         ComWindowUseful comWindowUseful = comWindowUsefulRepository.getByToken(token);
-        comWindowUseful.setMission_id(messageMission.getMissionId());
+        comWindowUseful.setMission_id(messageMission.get(0).getMissionId());
         comWindowUsefulRepository.save(comWindowUseful);
-        messageMission.setCustomerInfo(new MessageUser(bookUser.getUser_id(),bookUser.getUser_name(),bookUser.getUser_icon()));
+        messageMission.get(0).setCustomerInfo(new MessageUser(bookUser.getUser_id(),bookUser.getUser_name(),bookUser.getUser_icon()));
         return MessageInputUtil.baseMessageSimpleInputRecode("It Is Last",
-                messageMission,staffRecodeServices,StaffActionCode.START_MISSION,token,
-                "开始处理业务，业务id：" + messageMission.getMissionId());
+                messageMission.get(0),staffRecodeServices,StaffActionCode.START_MISSION,token,
+                "开始处理业务，业务id：" + messageMission.get(0).getMissionId());
     }
 
 
@@ -101,8 +105,8 @@ public class MissionServicesImpl implements MissionServices {
         BookMission bookMission = new BookMission(businessId,userId,officeId,time,1);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(time);
-        calendar.add(Calendar.HOUR,1);
-        int count = bookMissionRepository.getCount(officeId,time,calendar.getTime());
+        calendar.add(Calendar.HOUR_OF_DAY,1);
+        int count = bookMissionRepository.getCount(officeId,businessId,time,calendar.getTime());
         bookMission.setMission_register_id(count + 1);
         bookMission = bookMissionRepository.save(bookMission);
         BookUser bookUser = FindObjUtil.findById(userId,bookUserRepository);
@@ -167,6 +171,7 @@ public class MissionServicesImpl implements MissionServices {
                         cal3.setTime(cwt.getSleep_time());
                         if(DateUtils.sameDate(cal.getTime(),cal3.getTime()))
                         {
+                            b.getUsefulTime().put(cal.getTime(),-1);
                             isTheSameDay = true;
                             break;
                         }
@@ -176,7 +181,7 @@ public class MissionServicesImpl implements MissionServices {
                     Calendar cal1 = Calendar.getInstance();
                     cal1.setTime(cal.getTime());
                     cal1.add(Calendar.HOUR_OF_DAY,1);
-                    int count = bookMissionRepository.getCount(officeId,cal.getTime(),cal1.getTime());
+                    int count = bookMissionRepository.getCount(officeId,b.getBusinessId(),cal.getTime(),cal1.getTime());
                     b.getUsefulTime().put(cal.getTime(),count);
                 }
 
@@ -194,6 +199,7 @@ public class MissionServicesImpl implements MissionServices {
                     {
                         if(DateUtils.sameDate(cal.getTime(),cwt.getSleep_time()))
                         {
+                            b.getUsefulTime().put(cal.getTime(),-1);
                             isTheSameDay = true;
                             break;
                         }
@@ -204,7 +210,7 @@ public class MissionServicesImpl implements MissionServices {
                     Calendar cal1 = Calendar.getInstance();
                     cal1.setTime(cal.getTime());
                     cal1.add(Calendar.HOUR_OF_DAY,1);
-                    int count = bookMissionRepository.getCount(officeId,cal.getTime(),cal1.getTime());
+                    int count = bookMissionRepository.getCount(officeId,b.getBusinessId(),cal.getTime(),cal1.getTime());
                     b.getUsefulTime().put(cal.getTime(),count);
                 }
 
@@ -247,7 +253,7 @@ public class MissionServicesImpl implements MissionServices {
         cal.set(Calendar.SECOND,0);
 
         List<BookMission> bookMissions;
-        if(time.after(cal.getTime()))
+        if(time.before(cal.getTime()))
         {
             cal.set(Calendar.HOUR_OF_DAY,8);
             cal.set(Calendar.MINUTE,0);
@@ -270,8 +276,87 @@ public class MissionServicesImpl implements MissionServices {
         for(BookMission bookMission : bookMissions)
         {
             MessageMission mm = bookMissionRepository.getMissionMessageById(bookMission.getMission_id());
+            BookUser bookUser = FindObjUtil.findById(mm.getUserId(),bookUserRepository);
+            MessageUser messageUser = new MessageUser(bookUser.getUser_id(),bookUser.getUser_name(),bookUser.getUser_icon(),bookUser.getUser_phone());
+            mm.setCustomerInfo(messageUser);
             mml.add(mm);
         }
+        return MessageInputUtil.baseMessageSuccessInput(mml);
+    }
+
+    @Override
+    public BaseMessage<List<MessageMissionNotice>> getNotice(Integer userId) {
+        Calendar calendar = Calendar.getInstance();
+        Date startTime = calendar.getTime();
+        calendar.add(Calendar.HOUR_OF_DAY,2);
+        Date endTime = calendar.getTime();
+        return MessageInputUtil.baseMessageSuccessInput(bookMissionRepository.getNotice(userId,startTime,endTime));
+    }
+
+    @Override
+    public BaseMessage<String> passMissionToQueue(Integer missionId) {
+        BookMission bookMission = FindObjUtil.findById(missionId,bookMissionRepository);
+        if(bookMission == null)
+            return MessageInputUtil.baseMessageErrorInput(ErrorCode.OBJECT_NOT_FOUND);
+        bookMission.setMission_is_done(1);
+        bookMissionRepository.save(bookMission);
+        return MessageInputUtil.baseMessageSuccessInput("已返回排队序列");
+    }
+
+    @Override
+    public BaseMessage<List<MessageMission>> reachInPassMission(String userName, String businessName, Integer officeId) {
+        Calendar calendar = Calendar.getInstance();
+        if((userName == null || userName.isEmpty() )&&(businessName == null || businessName.isEmpty()))
+            return getAllPassMission(officeId,calendar.getTime());
+
+        Date time = calendar.getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        Date startTime;
+        if(time.before(cal.getTime())) {
+            cal.set(Calendar.HOUR_OF_DAY, 8);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            startTime = cal.getTime();
+        }
+        else {
+            cal.set(Calendar.HOUR_OF_DAY, 13);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            startTime = cal.getTime();
+        }
+
+
+        if(userName != null && !userName.isEmpty()) {
+            List<MessageMission> mml = bookMissionRepository.getPassMissionByName(userName, officeId, startTime, calendar.getTime());
+            for (MessageMission mm : mml) {
+                BookUser bookUser = FindObjUtil.findById(mm.getUserId(), bookUserRepository);
+                MessageUser messageUser = new MessageUser();
+                messageUser.setPhone(bookUser.getUser_phone());
+                messageUser.setUserIcon(bookUser.getUser_icon());
+                messageUser.setUserId(messageUser.getUserId());
+                messageUser.setUserName(messageUser.getUserName());
+                mm.setCustomerInfo(messageUser);
+            }
+
+            return MessageInputUtil.baseMessageSuccessInput(mml);
+        }
+
+
+        List<MessageMission> mml = bookMissionRepository.getPassMissionByBusinessName(businessName,officeId,startTime,calendar.getTime());
+        for(MessageMission mm : mml)
+        {
+            BookUser bookUser = FindObjUtil.findById(mm.getUserId(),bookUserRepository);
+            MessageUser messageUser = new MessageUser();
+            messageUser.setPhone(bookUser.getUser_phone());
+            messageUser.setUserIcon(bookUser.getUser_icon());
+            messageUser.setUserId(messageUser.getUserId());
+            messageUser.setUserName(messageUser.getUserName());
+            mm.setCustomerInfo(messageUser);
+        }
+
         return MessageInputUtil.baseMessageSuccessInput(mml);
     }
 }

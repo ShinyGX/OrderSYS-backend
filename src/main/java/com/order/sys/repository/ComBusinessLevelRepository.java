@@ -24,6 +24,6 @@ public interface ComBusinessLevelRepository extends JpaRepository<ComBusinessLev
             "WHERE bl.business_level_id >= ?1 and " +
             "bl.business_level_id=blt.business_level_id and " +
             "blt.business_id=b.business_id and " +
-            "b.business_type_id=bt.business_type_id",nativeQuery = true)
+            "b.business_type_id=bt.business_type_id and b.is_delete=1",nativeQuery = true)
     List<Map<String,Object>> getBusinessList(Integer level);
 }

@@ -14,4 +14,5 @@ public interface StaffServices {
     BaseMessage<List<MessageStaff>> searchStaffList(String name, Integer targetLevel, Integer userLevel, Integer areaId);
     BaseMessage<String> deleteAccount(Integer token,Integer staffId);
     BaseMessage<MessageStaff> getStaffInfo(Integer token);
+    BaseMessage<List<MessageStaff>> getStaffList(String name,Integer targetLevel,Integer token);
 }

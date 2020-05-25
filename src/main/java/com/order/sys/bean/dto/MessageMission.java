@@ -12,8 +12,19 @@ public class MessageMission {
     @JsonIgnore
     private Integer userId;
     private MessageUser customerInfo;
+    private Integer registerId;
 
     public MessageMission() {
+    }
+
+    public MessageMission(Integer missionId, Integer businessId, String businessDesc, Integer businessTypeId, String businessTypeDesc, Integer userId, Integer registerId) {
+        this.missionId = missionId;
+        this.businessId = businessId;
+        this.businessDesc = businessDesc;
+        this.businessTypeId = businessTypeId;
+        this.businessTypeDesc = businessTypeDesc;
+        this.userId = userId;
+        this.registerId = registerId;
     }
 
     public MessageMission(Integer missionId, Integer businessId, String businessDesc, Integer businessTypeId, String businessTypeDesc, Integer userId) {
@@ -46,6 +57,14 @@ public class MessageMission {
         this.businessTypeId = businessTypeId;
         this.businessTypeDesc = businessTypeDesc;
         this.customerInfo = customerInfo;
+    }
+
+    public Integer getRegisterId() {
+        return registerId;
+    }
+
+    public void setRegisterId(Integer registerId) {
+        this.registerId = registerId;
     }
 
     public Integer getUserId() {

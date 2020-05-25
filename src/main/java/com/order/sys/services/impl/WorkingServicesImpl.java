@@ -17,6 +17,8 @@ import com.order.sys.util.MessageInputUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -108,7 +110,17 @@ public class WorkingServicesImpl implements WorkingServices {
 
         Date endDate = cal.getTime();
 
-
+        List<ComWorkTime> cwtl = comWorkTimeRepository.findByTime(comStaff.getStaff_office_id(),startDate,endDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for(ComWorkTime cwt : cwtl)
+        {
+            String time = sdf.format(cwt.getSleep_time());
+            try {
+                cwt.setSleep_time(sdf.parse(time));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         return MessageInputUtil.baseMessageSuccessInput(comWorkTimeRepository.findByTime(comStaff.getStaff_office_id(),startDate,endDate));
     }
 

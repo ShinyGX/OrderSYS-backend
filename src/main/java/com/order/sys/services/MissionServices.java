@@ -18,4 +18,7 @@ public interface MissionServices {
     BaseMessage<String> cancel(Integer missionId);
     BaseMessage<MessageMission> back(Integer missionId);
     BaseMessage<List<MessageMission>> getAllPassMission(Integer officeId, Date endTime);
+    BaseMessage<List<MessageMissionNotice>> getNotice(Integer userId);
+    BaseMessage<String> passMissionToQueue(Integer missionId);
+    BaseMessage<List<MessageMission>> reachInPassMission(String userName,String businessName,Integer officeId);
 }

@@ -50,6 +50,9 @@ public class BusinessServicesImpl implements BusinessServices {
     @Autowired
     private SysCityRepository sysCityRepository;
 
+    @Autowired
+    private BookMissionRepository bookMissionRepository;
+
     @Override
     public BaseMessage<MessageBusiness> getBusinessMsg(Integer token, Integer businessId) {
 
@@ -133,7 +136,12 @@ public class BusinessServicesImpl implements BusinessServices {
             return MessageInputUtil.baseMessageErrorInput("Name Exist",ErrorCode.ACTION_ALREADY_DONE);
 
         ComBusiness comBusiness1 = new ComBusiness(obj.getBusinessName(),obj.getBusinessDetail(),obj.getBusinessTypeId());
+        comBusiness1.setIs_delete(1);
         comBusiness1 = comBusinessRepository.save(comBusiness1);
+        ComBusinessLevelLink comBusinessLevelLink = new ComBusinessLevelLink();
+        comBusinessLevelLink.setBusiness_id(comBusiness1.getBusiness_id());
+        comBusinessLevelLink.setBusiness_level_id(3);
+        comBusinessLevelLinkRepository.save(comBusinessLevelLink);
         return MessageInputUtil.baseMessageSimpleInputRecode("","success",
                 staffRecodeServices,StaffActionCode.CREATE_BUSINESS,obj.getToken(),
                 "创建了业务"+comBusiness1.getBusiness_desc()+"\nid:"+comBusiness1.getBusiness_id());
@@ -193,19 +201,8 @@ public class BusinessServicesImpl implements BusinessServices {
         if(comBusiness == null)
             return MessageInputUtil.baseMessageErrorInput("Business Id Not Exist",ErrorCode.OBJECT_NOT_FOUND);
 
-
-        List<ComBusinessWindowLink> comBusinessWindowLinks =
-                comBusinessWindowsLinkRepository.findAllByBusinessId(comBusiness.getBusiness_id());
-        for(ComBusinessWindowLink obj : comBusinessWindowLinks)
-        {
-            comBusinessWindowsLinkRepository.deleteById(obj.getId());
-        }
-
-
-        ComBusinessLevelLink comBusinessLevelLink = comBusinessLevelLinkRepository.findByBusinessId(businessId);
-        comBusinessLevelLinkRepository.delete(comBusinessLevelLink);
-
-        comBusinessRepository.deleteById(businessId);
+        comBusiness.setIs_delete(2);
+        comBusinessRepository.save(comBusiness);
 
         return MessageInputUtil.baseMessageSimpleInputRecode("","success",staffRecodeServices,
                 StaffActionCode.DELETE_BUSINESS,token,"删除业务:" + comBusiness.getBusiness_desc());
