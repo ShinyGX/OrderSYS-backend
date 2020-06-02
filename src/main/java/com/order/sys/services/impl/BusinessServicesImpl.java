@@ -89,7 +89,7 @@ public class BusinessServicesImpl implements BusinessServices {
 
     @Override
     public BaseMessage<List<ComBusiness>> getAllBusiness() {
-        return MessageInputUtil.baseMessageListInput("业务不存在",comBusinessRepository.findAll());
+        return MessageInputUtil.baseMessageListInput("业务不存在",comBusinessRepository.getAllNotDelete());
     }
 
     @Override

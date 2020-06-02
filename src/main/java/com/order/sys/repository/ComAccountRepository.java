@@ -1,10 +1,13 @@
 package com.order.sys.repository;
 
 
+import com.order.sys.bean.dto.MessageRecode;
 import com.order.sys.bean.dto.MessageStaff;
 import com.order.sys.bean.model.ComAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 
 public interface ComAccountRepository extends JpaRepository<ComAccount,Integer> {
@@ -37,6 +40,7 @@ public interface ComAccountRepository extends JpaRepository<ComAccount,Integer> 
 
     @Query(value = "select * from com_account where account_username=?1 and account_exist=1",nativeQuery = true)
     ComAccount getAccount(String username);
+
 
 
 

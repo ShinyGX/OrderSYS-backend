@@ -260,6 +260,10 @@ public class MissionServicesImpl implements MissionServices {
             cal.set(Calendar.SECOND,0);
             Date startTime = cal.getTime();
 
+////TODO : MARK
+//            Calendar test = Calendar.getInstance();
+//            test.set(Calendar.DAY_OF_MONTH,25);
+//            startTime = test.getTime();
             bookMissions = bookMissionRepository.getAllPassMission(officeId,startTime,time);
         }
         else
@@ -268,6 +272,11 @@ public class MissionServicesImpl implements MissionServices {
             cal.set(Calendar.MINUTE,0);
             cal.set(Calendar.SECOND,0);
             Date startTime = cal.getTime();
+
+//            //TODO : MARK
+//            Calendar test = Calendar.getInstance();
+//            test.set(Calendar.DAY_OF_MONTH,25);
+//            startTime = test.getTime();
 
             bookMissions = bookMissionRepository.getAllPassMission(officeId,startTime,time);
         }
@@ -328,6 +337,10 @@ public class MissionServicesImpl implements MissionServices {
             startTime = cal.getTime();
         }
 
+//        //TODO :MARK
+//        Calendar test = Calendar.getInstance();
+//        test.set(Calendar.DAY_OF_MONTH,25);
+//        startTime = test.getTime();
 
         if(userName != null && !userName.isEmpty()) {
             List<MessageMission> mml = bookMissionRepository.getPassMissionByName(userName, officeId, startTime, calendar.getTime());

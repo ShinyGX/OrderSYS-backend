@@ -3,6 +3,7 @@ package com.order.sys.util;
 
 
 import com.order.sys.bean.dto.BaseMessage;
+import com.order.sys.bean.dto.PageMessage;
 import com.order.sys.constants.ErrorCode;
 import com.order.sys.services.StaffRecodeServices;
 
@@ -24,6 +25,28 @@ public class MessageInputUtil {
         errorCodeMap.put(ErrorCode.A_LI_YUN_API_ERROR,"ALiYun Api Error");
     }
 
+    public static <T>PageMessage<T> pageMessageErrorInput(int errorCode)
+    {
+        PageMessage<T> msg = new PageMessage<>();
+        msg.setCode(errorCode);
+        msg.setCurPage(1);
+        msg.setMaxPage(1);
+        msg.setData(null);
+        msg.setMsg(errorCodeMap.get(errorCode));
+        return msg;
+    }
+
+
+    public static <T>PageMessage<T> pageMessageSuccessInput(T data,int curPage,int maxPage)
+    {
+        PageMessage<T> msg = new PageMessage<>();
+        msg.setCode(ErrorCode.SUCCESS);
+        msg.setCurPage(curPage);
+        msg.setMaxPage(maxPage);
+        msg.setData(data);
+        msg.setMsg(errorCodeMap.get(ErrorCode.SUCCESS));
+        return msg;
+    }
 
     public static <T> BaseMessage<T> baseMessageErrorInput(int errorCode) {
         return baseMessageErrorInput(errorCodeMap.get(errorCode), errorCode);

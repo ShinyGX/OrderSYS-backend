@@ -2,6 +2,7 @@ package com.order.sys.repository;
 
 
 import com.order.sys.bean.dto.MessageOffice;
+import com.order.sys.bean.dto.MessageRecode;
 import com.order.sys.bean.dto.MessageStaff;
 import com.order.sys.bean.model.SysArea;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,4 +49,17 @@ public interface SysAreaRepository extends JpaRepository<SysArea,Integer> {
 
     @Query(value = "select * from sys_area where city_id=?1",nativeQuery = true)
     List<SysArea> getArea(Integer cityId);
+
+
+    @Query("select new com.order.sys.bean.dto.MessageRecode(" +
+            "a.account_id," +
+            "s.staff_name," +
+            "r.recode_action_time," +
+            "ra.action_desc," +
+            "r.recode_action_id," +
+            "r.recode_action_desc) " +
+            "from ComAccount a,ComStaff s,SysRecodeStaff r,SysRecodeStaffAction ra,SysOffice o " +
+            "where a.staff_id=s.staff_id and r.recode_account_id=a.account_id and ra.action_id=r.recode_action_id " +
+            "and s.staff_office_id=o.office_id and o.area_id=?1")
+    List<MessageRecode> queryByArea(Integer area);
 }
